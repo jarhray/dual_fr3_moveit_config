@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="dual_fr3">
+
+  <xacro:include filename="$(find franka_description)/robots/common/franka_robot.xacro"/>
+  <xacro:include filename="$(find franka_hardware)/ros2_control/franka_arm.ros2_control.xacro"/>
+
+  <xacro:arg name="use_fake_hardware" default="true"/>
+  <xacro:arg name="fake_sensor_commands" default="false"/>
+  <xacro:arg name="left_robot_ip" default=""/>
+  <xacro:arg name="right_robot_ip" default=""/>
+  <xacro:arg name="load_gripper" default="true"/>
+  <xacro:arg name="ee_id" default="franka_hand"/>
+  <xacro:arg name="arm_yaw" default="0"/>
+
+  <material name="worktable_dark_green">
+    <color rgba="0.0 0.22 0.15 1.0"/>
+  </material>
+
+  <link name="world"/>
+
+  <link name="worktable">
+    <visual>
+      <origin xyz="0.375 0.75 -0.025" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.75 1.5 0.05"/>
+      </geometry>
+      <material name="worktable_dark_green"/>
+    </visual>
+    <!-- Keep the collision top slightly below the visual top to avoid startup contact at the mounts. -->
+    <collision>
+      <origin xyz="0.375 0.75 -0.030" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.75 1.5 0.04"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="world_to_worktable" type="fixed">
+    <parent link="world"/>
+    <child link="worktable"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="worktable_to_left_fr3_mount" type="fixed">
+    <parent link="worktable"/>
+    <child link="left_fr3_mount"/>
+    <origin xyz="0.175 0.35 0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="worktable_to_right_fr3_mount" type="fixed">
+    <parent link="worktable"/>
+    <child link="right_fr3_mount"/>
+    <origin xyz="0.175 0.95 0" rpy="0 0 0"/>
+  </joint>
+
+  <xacro:franka_robot
+      robot_type="fr3"
+      parent="world"
+      hand="$(arg load_gripper)"
+      ee_id="$(arg ee_id)"
+      rpy_ee="0 0 ${-pi/4}"
+      tcp_xyz="0 0 0.1034"
+      tcp_rpy="0 0 0"
+      safety_distance="0.03"
+      with_sc="false"
+      no_prefix="false"
+      arm_prefix="left_"
+      connected_to="left_fr3_mount"
+      rpy="0 0 $(arg arm_yaw)"/>
+
+  <xacro:franka_robot
+      robot_type="fr3"
+      parent="world"
+      hand="$(arg load_gripper)"
+      ee_id="$(arg ee_id)"
+      rpy_ee="0 0 ${-pi/4}"
+      tcp_xyz="0 0 0.1034"
+      tcp_rpy="0 0 0"
+      safety_distance="0.03"
+      with_sc="false"
+      no_prefix="false"
+      arm_prefix="right_"
+      connected_to="right_fr3_mount"
+      rpy="0 0 $(arg arm_yaw)"/>
+
+  <xacro:franka_arm_ros2_control
+      robot_type="fr3"
+      include_effort_command="true"
+      include_finger_joint="false"
+      arm_prefix="left_">
+    <hardware_plugin>
+      <xacro:if value="$(arg use_fake_hardware)">
+        <plugin>mock_components/GenericSystem</plugin>
+        <param name="mock_sensor_commands">$(arg fake_sensor_commands)</param>
+        <param name="state_following_offset">0.0</param>
+      </xacro:if>
+      <xacro:unless value="$(arg use_fake_hardware)">
+        <plugin>franka_hardware/FrankaHardwareInterface</plugin>
+        <param name="robot_ip">$(arg left_robot_ip)</param>
+        <param name="arm_prefix">left_</param>
+      </xacro:unless>
+    </hardware_plugin>
+  </xacro:franka_arm_ros2_control>
+
+  <xacro:franka_arm_ros2_control
+      robot_type="fr3"
+      include_effort_command="true"
+      include_finger_joint="false"
+      arm_prefix="right_">
+    <hardware_plugin>
+      <xacro:if value="$(arg use_fake_hardware)">
+        <plugin>mock_components/GenericSystem</plugin>
+        <param name="mock_sensor_commands">$(arg fake_sensor_commands)</param>
+        <param name="state_following_offset">0.0</param>
+      </xacro:if>
+      <xacro:unless value="$(arg use_fake_hardware)">
+        <plugin>franka_hardware/FrankaHardwareInterface</plugin>
+        <param name="robot_ip">$(arg right_robot_ip)</param>
+        <param name="arm_prefix">right_</param>
+      </xacro:unless>
+    </hardware_plugin>
+  </xacro:franka_arm_ros2_control>
+</robot>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="dual_fr3">
+
+  <xacro:macro name="fr3_arm_semantics" params="prefix">
+    <group name="${prefix}arm">
+      <chain base_link="${prefix}link0" tip_link="${prefix}hand_tcp"/>
+    </group>
+
+    <group name="${prefix}hand">
+      <link name="${prefix}hand"/>
+      <link name="${prefix}leftfinger"/>
+      <link name="${prefix}rightfinger"/>
+      <joint name="${prefix}finger_joint1"/>
+      <passive_joint name="${prefix}finger_joint2"/>
+    </group>
+
+    <group_state name="ready" group="${prefix}arm">
+      <joint name="${prefix}joint1" value="0"/>
+      <joint name="${prefix}joint2" value="${-pi/4}"/>
+      <joint name="${prefix}joint3" value="0"/>
+      <joint name="${prefix}joint4" value="${-3*pi/4}"/>
+      <joint name="${prefix}joint5" value="0"/>
+      <joint name="${prefix}joint6" value="${pi/2}"/>
+      <joint name="${prefix}joint7" value="${pi/4}"/>
+    </group_state>
+
+    <group_state name="open" group="${prefix}hand">
+      <joint name="${prefix}finger_joint1" value="0.035"/>
+      <joint name="${prefix}finger_joint2" value="0.035"/>
+    </group_state>
+
+    <end_effector
+        name="${prefix}hand"
+        parent_link="${prefix}hand_tcp"
+        group="${prefix}hand"
+        parent_group="${prefix}arm"/>
+
+    <disable_collisions link1="${prefix}link0" link2="${prefix}link1" reason="Adjacent"/>
+    <disable_collisions link1="${prefix}link0" link2="${prefix}link2" reason="Never"/>
+    <disable_collisions link1="${prefix}link0" link2="${prefix}link3" reason="Never"/>
+    <disable_collisions link1="${prefix}link0" link2="${prefix}link4" reason="Never"/>
+    <disable_collisions link1="${prefix}link1" link2="${prefix}link2" reason="Adjacent"/>
+    <disable_collisions link1="${prefix}link1" link2="${prefix}link3" reason="Never"/>
+    <disable_collisions link1="${prefix}link1" link2="${prefix}link4" reason="Never"/>
+    <disable_collisions link1="${prefix}link2" link2="${prefix}link3" reason="Adjacent"/>
+    <disable_collisions link1="${prefix}link2" link2="${prefix}link4" reason="Never"/>
+    <disable_collisions link1="${prefix}link2" link2="${prefix}link6" reason="Never"/>
+    <disable_collisions link1="${prefix}link3" link2="${prefix}link4" reason="Adjacent"/>
+    <disable_collisions link1="${prefix}link3" link2="${prefix}link5" reason="Never"/>
+    <disable_collisions link1="${prefix}link3" link2="${prefix}link6" reason="Never"/>
+    <disable_collisions link1="${prefix}link3" link2="${prefix}link7" reason="Never"/>
+    <disable_collisions link1="${prefix}link4" link2="${prefix}link5" reason="Adjacent"/>
+    <disable_collisions link1="${prefix}link4" link2="${prefix}link6" reason="Never"/>
+    <disable_collisions link1="${prefix}link4" link2="${prefix}link7" reason="Never"/>
+    <disable_collisions link1="${prefix}link4" link2="${prefix}link8" reason="Never"/>
+    <disable_collisions link1="${prefix}link5" link2="${prefix}link6" reason="Adjacent"/>
+    <disable_collisions link1="${prefix}link5" link2="${prefix}link7" reason="Never"/>
+    <disable_collisions link1="${prefix}link6" link2="${prefix}link7" reason="Adjacent"/>
+    <disable_collisions link1="${prefix}link6" link2="${prefix}link8" reason="Default"/>
+    <disable_collisions link1="${prefix}link7" link2="${prefix}link8" reason="Adjacent"/>
+
+    <disable_collisions link1="${prefix}hand" link2="${prefix}leftfinger" reason="Adjacent"/>
+    <disable_collisions link1="${prefix}hand" link2="${prefix}rightfinger" reason="Adjacent"/>
+    <disable_collisions link1="${prefix}leftfinger" link2="${prefix}rightfinger" reason="Default"/>
+    <disable_collisions link1="${prefix}hand" link2="${prefix}link3" reason="Never"/>
+    <disable_collisions link1="${prefix}hand" link2="${prefix}link4" reason="Never"/>
+    <disable_collisions link1="${prefix}hand" link2="${prefix}link6" reason="Never"/>
+    <disable_collisions link1="${prefix}hand" link2="${prefix}link7" reason="Adjacent"/>
+    <disable_collisions link1="${prefix}hand" link2="${prefix}link8" reason="Adjacent"/>
+    <disable_collisions link1="${prefix}leftfinger" link2="${prefix}link3" reason="Never"/>
+    <disable_collisions link1="${prefix}leftfinger" link2="${prefix}link4" reason="Never"/>
+    <disable_collisions link1="${prefix}leftfinger" link2="${prefix}link6" reason="Never"/>
+    <disable_collisions link1="${prefix}leftfinger" link2="${prefix}link7" reason="Never"/>
+    <disable_collisions link1="${prefix}leftfinger" link2="${prefix}link8" reason="Never"/>
+    <disable_collisions link1="${prefix}link3" link2="${prefix}rightfinger" reason="Never"/>
+    <disable_collisions link1="${prefix}link4" link2="${prefix}rightfinger" reason="Never"/>
+    <disable_collisions link1="${prefix}link6" link2="${prefix}rightfinger" reason="Never"/>
+    <disable_collisions link1="${prefix}link7" link2="${prefix}rightfinger" reason="Never"/>
+    <disable_collisions link1="${prefix}link8" link2="${prefix}rightfinger" reason="Never"/>
+  </xacro:macro>
+
+  <xacro:fr3_arm_semantics prefix="left_fr3_"/>
+  <xacro:fr3_arm_semantics prefix="right_fr3_"/>
+
+  <group name="dual_fr3_arms">
+    <group name="left_fr3_arm"/>
+    <group name="right_fr3_arm"/>
+  </group>
+
+  <group_state name="both_ready" group="dual_fr3_arms">
+    <joint name="left_fr3_joint1" value="0"/>
+    <joint name="left_fr3_joint2" value="${-pi/4}"/>
+    <joint name="left_fr3_joint3" value="0"/>
+    <joint name="left_fr3_joint4" value="${-3*pi/4}"/>
+    <joint name="left_fr3_joint5" value="0"/>
+    <joint name="left_fr3_joint6" value="${pi/2}"/>
+    <joint name="left_fr3_joint7" value="${pi/4}"/>
+    <joint name="right_fr3_joint1" value="0"/>
+    <joint name="right_fr3_joint2" value="${-pi/4}"/>
+    <joint name="right_fr3_joint3" value="0"/>
+    <joint name="right_fr3_joint4" value="${-3*pi/4}"/>
+    <joint name="right_fr3_joint5" value="0"/>
+    <joint name="right_fr3_joint6" value="${pi/2}"/>
+    <joint name="right_fr3_joint7" value="${pi/4}"/>
+  </group_state>
+
+  <disable_collisions link1="worktable" link2="left_fr3_mount" reason="Adjacent"/>
+  <disable_collisions link1="worktable" link2="right_fr3_mount" reason="Adjacent"/>
+  <disable_collisions link1="worktable" link2="left_fr3_link0" reason="Mount"/>
+  <disable_collisions link1="worktable" link2="right_fr3_link0" reason="Mount"/>
+</robot>
