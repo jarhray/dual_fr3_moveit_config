@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find franka_description)/end_effectors/common/utils.xacro"/>
+
+  <xacro:macro name="research_franka_hand"
+               params="connected_to prefix ee_inertials
+                       rpy_ee:='0 0 0'
+                       xyz_ee:='0 0 0'
+                       tcp_xyz:='0 0 0.1034'
+                       tcp_rpy:='0 0 0'">
+    <joint name="${prefix}hand_joint" type="fixed">
+      <parent link="${connected_to}"/>
+      <child link="${prefix}hand"/>
+      <origin xyz="${xyz_ee}" rpy="${rpy_ee}"/>
+    </joint>
+
+    <link name="${prefix}hand">
+      <visual name="${prefix}hand_visual">
+        <geometry>
+          <mesh filename="package://franka_description/meshes/robot_ee/franka_hand_white/visual/hand.dae"/>
+        </geometry>
+      </visual>
+      <collision name="${prefix}hand_collision">
+        <geometry>
+          <mesh filename="package://franka_description/meshes/robot_ee/franka_hand_white/collision/hand.stl"/>
+        </geometry>
+      </collision>
+      <xacro:ee-inertials name="hand"/>
+    </link>
+
+    <link name="${prefix}hand_tcp"/>
+    <joint name="${prefix}hand_tcp_joint" type="fixed">
+      <origin xyz="${tcp_xyz}" rpy="${tcp_rpy}"/>
+      <parent link="${prefix}hand"/>
+      <child link="${prefix}hand_tcp"/>
+    </joint>
+
+    <link name="${prefix}leftfinger">
+      <visual name="${prefix}leftfinger_visual">
+        <origin xyz="0 0 0.0964" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://dual_fr3_moveit_config/meshes/research_finger/finger.STL"/>
+        </geometry>
+        <material name="${prefix}leftfinger_material">
+          <color rgba="0.75294 0.75294 0.75294 1"/>
+        </material>
+      </visual>
+      <collision name="${prefix}leftfinger_collision">
+        <origin xyz="0 0.0135 0.05545" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.021 0.029 0.106"/>
+        </geometry>
+      </collision>
+      <xacro:ee-inertials name="leftfinger"/>
+    </link>
+
+    <link name="${prefix}rightfinger">
+      <visual name="${prefix}rightfinger_visual">
+        <origin xyz="0 0 0.0964" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://dual_fr3_moveit_config/meshes/research_finger/finger.STL"/>
+        </geometry>
+        <material name="${prefix}rightfinger_material">
+          <color rgba="0.75294 0.75294 0.75294 1"/>
+        </material>
+      </visual>
+      <collision name="${prefix}rightfinger_collision">
+        <origin xyz="0 0.0135 0.05545" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.021 0.029 0.106"/>
+        </geometry>
+      </collision>
+      <xacro:ee-inertials name="rightfinger"/>
+    </link>
+
+    <joint name="${prefix}finger_joint1" type="prismatic">
+      <parent link="${prefix}hand"/>
+      <child link="${prefix}leftfinger"/>
+      <origin xyz="0 0 0.0584" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+      <limit effort="100" lower="0.0" upper="0.04" velocity="0.2"/>
+      <dynamics damping="0.3"/>
+    </joint>
+
+    <joint name="${prefix}finger_joint2" type="prismatic">
+      <parent link="${prefix}hand"/>
+      <child link="${prefix}rightfinger"/>
+      <origin xyz="0 0 0.0584" rpy="0 0 ${pi}"/>
+      <axis xyz="0 1 0"/>
+      <limit effort="100" lower="0.0" upper="0.04" velocity="0.2"/>
+      <mimic joint="${prefix}finger_joint1"/>
+      <dynamics damping="0.3"/>
+    </joint>
+  </xacro:macro>
+
+</robot>

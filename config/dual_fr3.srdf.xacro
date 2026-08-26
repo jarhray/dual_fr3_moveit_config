@@ -108,4 +108,7 @@
   <disable_collisions link1="worktable" link2="right_fr3_mount" reason="Adjacent"/>
   <disable_collisions link1="worktable" link2="left_fr3_link0" reason="Mount"/>
   <disable_collisions link1="worktable" link2="right_fr3_link0" reason="Mount"/>
+  <disable_collisions link1="worktable" link2="plate" reason="Adjacent"/>
+  <disable_collisions link1="worktable" link2="trunking" reason="Fixture"/>
+  <disable_collisions link1="plate" link2="trunking" reason="Adjacent"/>
 </robot>

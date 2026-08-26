@@ -639,13 +639,13 @@ def demo():
         thread = threading.Thread(target=executor.spin, daemon=True)
         thread.start()
 
-        controller.reset_both_arms(execute=False)
+        controller.reset_both_arms(execute=True)
         controller.close_gripper("left")
         controller.open_gripper("left")
 
         controller.close_gripper("right")
 
-        controller.move_left_to(0.4, 0.0, 0.5, execute=True)
+        controller.move_left_to(0.50, 0.7, 0.2, execute=True)
         print("Dual FR3 controller demo completed")
     finally:
         if controller is not None:

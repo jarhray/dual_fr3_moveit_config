@@ -3,28 +3,33 @@
 
   <xacro:include filename="$(find franka_description)/robots/common/franka_robot.xacro"/>
   <xacro:include filename="$(find franka_hardware)/ros2_control/franka_arm.ros2_control.xacro"/>
+  <xacro:include filename="$(find dual_fr3_moveit_config)/config/research_franka_hand.xacro"/>
 
   <xacro:arg name="load_gripper" default="true"/>
   <xacro:arg name="ee_id" default="franka_hand"/>
   <xacro:arg name="arm_yaw" default="0"/>
   <xacro:arg name="gazebo_effort" default="true"/>
 
-  <material name="worktable_dark_green">
-    <color rgba="0.0 0.22 0.15 1.0"/>
+  <material name="fixture_blue_gray">
+    <color rgba="0.7921568627 0.8196078431 0.9333333333 1.0"/>
+  </material>
+
+  <material name="fixture_white">
+    <color rgba="1.0 1.0 1.0 1.0"/>
   </material>
 
   <link name="world"/>
 
   <link name="worktable">
     <visual>
-      <origin xyz="0.375 0.75 -0.025" rpy="0 0 0"/>
+      <origin xyz="0.375 0.75 -0.02" rpy="0 0 0"/>
       <geometry>
-        <box size="0.75 1.5 0.05"/>
+        <mesh filename="package://dual_fr3_moveit_config/meshes/base_link.STL"/>
       </geometry>
-      <material name="worktable_dark_green"/>
+      <material name="fixture_blue_gray"/>
     </visual>
     <collision>
-      <origin xyz="0.375 0.75 -0.030" rpy="0 0 0"/>
+      <origin xyz="0.375 0.75 -0.02" rpy="0 0 0"/>
       <geometry>
         <box size="0.75 1.5 0.04"/>
       </geometry>
@@ -36,10 +41,64 @@
     </inertial>
   </link>
 
+  <link name="plate">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://dual_fr3_moveit_config/meshes/Plate.STL"/>
+      </geometry>
+      <material name="fixture_blue_gray"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.025" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.6 1.06 0.05"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0.0088197177 0.0000715269 0.0106850997" rpy="0 0 0"/>
+      <mass value="11.3852045210"/>
+      <inertia ixx="0.9160469835" ixy="0.0000187920" ixz="0.0" iyy="0.3327549084" iyz="0.0" izz="1.2478608782"/>
+    </inertial>
+  </link>
+
+  <link name="trunking">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://dual_fr3_moveit_config/meshes/Trunking.STL"/>
+      </geometry>
+      <material name="fixture_white"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://dual_fr3_moveit_config/meshes/collision/trunking.STL"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="-0.2685275817 -0.4514864586 0.0188180688" rpy="0 0 0"/>
+      <mass value="1.0228350951"/>
+      <inertia ixx="0.0268769452" ixy="-0.0000088301" ixz="-0.0000047833" iyy="0.0071799691" iyz="-0.0000585560" izz="0.0332373299"/>
+    </inertial>
+  </link>
+
   <joint name="world_to_worktable" type="fixed">
     <parent link="world"/>
     <child link="worktable"/>
     <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="worktable_to_plate" type="fixed">
+    <parent link="worktable"/>
+    <child link="plate"/>
+    <origin xyz="0.5468955964 0.6484339463 -0.02" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="plate_to_trunking" type="fixed">
+    <parent link="plate"/>
+    <child link="trunking"/>
+    <origin xyz="0.2621044036 0.4745660537 0.02" rpy="0 0 0"/>
   </joint>
 
   <joint name="worktable_to_left_fr3_mount" type="fixed">
@@ -57,7 +116,7 @@
   <xacro:franka_robot
       robot_type="fr3"
       parent="world"
-      hand="$(arg load_gripper)"
+      hand="false"
       ee_id="$(arg ee_id)"
       rpy_ee="0 0 ${-pi/4}"
       tcp_xyz="0 0 0.1034"
@@ -73,7 +132,7 @@
   <xacro:franka_robot
       robot_type="fr3"
       parent="world"
-      hand="$(arg load_gripper)"
+      hand="false"
       ee_id="$(arg ee_id)"
       rpy_ee="0 0 ${-pi/4}"
       tcp_xyz="0 0 0.1034"
@@ -85,6 +144,24 @@
       connected_to="right_fr3_mount"
       rpy="0 0 $(arg arm_yaw)"
       gazebo="true"/>
+
+  <xacro:if value="$(arg load_gripper)">
+    <xacro:research_franka_hand
+        connected_to="left_fr3_link8"
+        prefix="left_fr3_"
+        ee_inertials="${xacro.load_yaml('$(find franka_description)/end_effectors/franka_hand/inertials.yaml')}"
+        rpy_ee="0 0 ${-pi/4}"
+        tcp_xyz="0 0 0.1034"
+        tcp_rpy="0 0 0"/>
+
+    <xacro:research_franka_hand
+        connected_to="right_fr3_link8"
+        prefix="right_fr3_"
+        ee_inertials="${xacro.load_yaml('$(find franka_description)/end_effectors/franka_hand/inertials.yaml')}"
+        rpy_ee="0 0 ${-pi/4}"
+        tcp_xyz="0 0 0.1034"
+        tcp_rpy="0 0 0"/>
+  </xacro:if>
 
   <xacro:franka_arm_ros2_control
       robot_type="fr3"

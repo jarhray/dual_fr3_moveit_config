@@ -366,6 +366,7 @@ ros2 launch dual_fr3_moveit_config gazebo.launch.py gz_args:="empty.sdf -r"
 Gazebo 模式启动内容：
 
 - `ros_gz_sim`
+- `ros_gz_bridge`（将 Gazebo 的 `/clock` 接入 ROS）
 - `robot_state_publisher`
 - 将双臂 FR3 + 工作台模型 spawn 到 Gazebo
 - Gazebo 内部的 `gz_ros2_control`
@@ -376,6 +377,9 @@ Gazebo 模式启动内容：
 - 左右 fake gripper action server
 - RViz，除非设置 `use_rviz:=false`
 
+Gazebo 启动默认启用 `use_sim_time`，因此 MoveIt 的轨迹超时按照仿真时钟计算；这对
+复杂模型导致仿真频率低于实时的情况是必要的。
+
 Gazebo 模式不会单独启动 `ros2_control_node`。控制器管理器由 Gazebo 模型里的
 `gz_ros2_control` 插件创建。
 
@@ -385,11 +389,19 @@ Gazebo 使用的主要配置文件：
 - `config/gazebo_ros2_controllers.yaml`
 - `launch/gazebo.launch.py`
 
-当前 Gazebo 配置中，左右臂使用：
+当前 Gazebo 配置默认使用原生 `gz_ros2_control/GazeboSimSystem` 和 position
+trajectory controller，以便 MoveIt 的轨迹直接写入 Gazebo 关节：
 
 ```text
-franka_gazebo_hardware/FrankaGazeboHardwareInterface
+command_interfaces: position
 ```
+
+如需运行官方 effort/model-based 示例控制器，可传入 `gazebo_effort:=true`；当前
+MoveIt trajectory controller 仍使用 position 接口。
+
+工作台、安装板、线槽和手指保留原始 visual mesh，但 collision 使用简化 box。
+不要把高面数 visual STL 直接用作 Gazebo collision，否则物理更新频率会从
+250 Hz 降到个位数，表现为控制器接收轨迹但机械臂几乎不动。
 
 控制器名称仍然保持为：
 

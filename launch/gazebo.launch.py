@@ -31,10 +31,21 @@ def load_yaml(package_name, file_path):
 def generate_launch_description():
     package_name = "dual_fr3_moveit_config"
 
+    trajectory_execution_duration_scaling = LaunchConfiguration(
+        "trajectory_execution_duration_scaling"
+    )
+    trajectory_execution_goal_margin = LaunchConfiguration(
+        "trajectory_execution_goal_margin"
+    )
+
     load_gripper = LaunchConfiguration("load_gripper")
     ee_id = LaunchConfiguration("ee_id")
+    gazebo_effort = LaunchConfiguration("gazebo_effort")
+    use_sim_time = LaunchConfiguration("use_sim_time")
     use_rviz = LaunchConfiguration("use_rviz")
     gz_args = LaunchConfiguration("gz_args")
+    capabilities = LaunchConfiguration("capabilities")
+    disable_capabilities = LaunchConfiguration("disable_capabilities")
 
     package_share = get_package_share_directory(package_name)
     franka_description_share = get_package_share_directory("franka_description")
@@ -56,7 +67,8 @@ def generate_launch_description():
             load_gripper,
             " ee_id:=",
             ee_id,
-            " gazebo_effort:=true",
+            " gazebo_effort:=",
+            gazebo_effort,
         ]
     )
     robot_description = {
@@ -99,8 +111,8 @@ def generate_launch_description():
 
     trajectory_execution = {
         "moveit_manage_controllers": True,
-        "trajectory_execution.allowed_execution_duration_scaling": 1.2,
-        "trajectory_execution.allowed_goal_duration_margin": 0.5,
+        "trajectory_execution.allowed_execution_duration_scaling": trajectory_execution_duration_scaling,
+        "trajectory_execution.allowed_goal_duration_margin": trajectory_execution_goal_margin,
         "trajectory_execution.allowed_start_tolerance": 0.01,
     }
 
@@ -114,7 +126,7 @@ def generate_launch_description():
     resource_paths = os.pathsep.join(
         [
             os.path.dirname(franka_description_share),
-            package_share,
+            os.path.dirname(package_share),
             os.environ.get("GZ_SIM_RESOURCE_PATH", ""),
         ]
     )
@@ -128,12 +140,20 @@ def generate_launch_description():
         launch_arguments={"gz_args": gz_args}.items(),
     )
 
+    clock_bridge = Node(
+        package="ros_gz_bridge",
+        executable="parameter_bridge",
+        name="clock_bridge",
+        arguments=["/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock"],
+        output="screen",
+    )
+
     robot_state_publisher = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
         name="robot_state_publisher",
         output="both",
-        parameters=[robot_description],
+        parameters=[robot_description, {"use_sim_time": use_sim_time}],
     )
 
     spawn_robot = Node(
@@ -151,6 +171,7 @@ def generate_launch_description():
         parameters=[
             robot_description,
             {
+                "use_sim_time": use_sim_time,
                 "source_list": [
                     "joint_state_broadcaster/joint_states",
                     "left_franka_gripper/joint_states",
@@ -173,6 +194,13 @@ def generate_launch_description():
             trajectory_execution,
             moveit_controllers,
             planning_scene_monitor_parameters,
+            {
+                "use_sim_time": use_sim_time,
+                "capabilities": ParameterValue(capabilities, value_type=str),
+                "disable_capabilities": ParameterValue(
+                    disable_capabilities, value_type=str
+                ),
+            },
         ],
     )
 
@@ -184,6 +212,7 @@ def generate_launch_description():
         prefix="/usr/bin/python3",
         parameters=[
             {
+                "use_sim_time": use_sim_time,
                 "joint_names": [
                     "left_fr3_finger_joint1",
                     "left_fr3_finger_joint2",
@@ -202,6 +231,7 @@ def generate_launch_description():
         prefix="/usr/bin/python3",
         parameters=[
             {
+                "use_sim_time": use_sim_time,
                 "joint_names": [
                     "right_fr3_finger_joint1",
                     "right_fr3_finger_joint2",
@@ -223,6 +253,7 @@ def generate_launch_description():
             robot_description_semantic,
             ompl_planning_pipeline_config,
             kinematics_yaml,
+            {"use_sim_time": use_sim_time},
         ],
         condition=IfCondition(use_rviz),
     )
@@ -261,9 +292,39 @@ def generate_launch_description():
                 description="End-effector id.",
             ),
             DeclareLaunchArgument(
+                "gazebo_effort",
+                default_value="false",
+                description="Use the custom Gazebo hardware plugin.",
+            ),
+            DeclareLaunchArgument(
+                "use_sim_time",
+                default_value="true",
+                description="Use Gazebo's simulation clock for ROS nodes.",
+            ),
+            DeclareLaunchArgument(
                 "use_rviz",
                 default_value="true",
                 description="Launch RViz.",
+            ),
+            DeclareLaunchArgument(
+                "trajectory_execution_duration_scaling",
+                default_value="1.2",
+                description="Allowed execution duration scaling for move_group.",
+            ),
+            DeclareLaunchArgument(
+                "trajectory_execution_goal_margin",
+                default_value="0.5",
+                description="Allowed goal duration margin for move_group.",
+            ),
+            DeclareLaunchArgument(
+                "capabilities",
+                default_value="",
+                description="Additional MoveGroup capabilities.",
+            ),
+            DeclareLaunchArgument(
+                "disable_capabilities",
+                default_value="",
+                description="Disabled MoveGroup capabilities.",
             ),
             DeclareLaunchArgument(
                 "gz_args",
@@ -272,6 +333,7 @@ def generate_launch_description():
             ),
             SetEnvironmentVariable("GZ_SIM_RESOURCE_PATH", resource_paths),
             gazebo,
+            clock_bridge,
             robot_state_publisher,
             spawn_robot,
             joint_state_publisher,

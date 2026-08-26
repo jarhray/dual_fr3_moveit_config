@@ -23,6 +23,13 @@ def load_yaml(package_name, file_path):
 def generate_launch_description():
     package_name = "dual_fr3_moveit_config"
 
+    trajectory_execution_duration_scaling = LaunchConfiguration(
+        "trajectory_execution_duration_scaling"
+    )
+    trajectory_execution_goal_margin = LaunchConfiguration(
+        "trajectory_execution_goal_margin"
+    )
+
     use_fake_hardware = LaunchConfiguration("use_fake_hardware")
     fake_sensor_commands = LaunchConfiguration("fake_sensor_commands")
     left_robot_ip = LaunchConfiguration("left_robot_ip")
@@ -30,6 +37,8 @@ def generate_launch_description():
     load_gripper = LaunchConfiguration("load_gripper")
     ee_id = LaunchConfiguration("ee_id")
     use_rviz = LaunchConfiguration("use_rviz")
+    capabilities = LaunchConfiguration("capabilities")
+    disable_capabilities = LaunchConfiguration("disable_capabilities")
 
     package_share = get_package_share_directory(package_name)
     gripper_config = os.path.join(
@@ -103,8 +112,8 @@ def generate_launch_description():
 
     trajectory_execution = {
         "moveit_manage_controllers": True,
-        "trajectory_execution.allowed_execution_duration_scaling": 1.2,
-        "trajectory_execution.allowed_goal_duration_margin": 0.5,
+        "trajectory_execution.allowed_execution_duration_scaling": trajectory_execution_duration_scaling,
+        "trajectory_execution.allowed_goal_duration_margin": trajectory_execution_goal_margin,
         "trajectory_execution.allowed_start_tolerance": 0.01,
     }
 
@@ -127,6 +136,12 @@ def generate_launch_description():
             trajectory_execution,
             moveit_controllers,
             planning_scene_monitor_parameters,
+            {
+                "capabilities": ParameterValue(capabilities, value_type=str),
+                "disable_capabilities": ParameterValue(
+                    disable_capabilities, value_type=str
+                ),
+            },
         ],
     )
 
@@ -324,7 +339,7 @@ def generate_launch_description():
                 description="Load Franka hand geometry.",
             ),
             DeclareLaunchArgument(
-                "ee_id",
+            "ee_id",
                 default_value="franka_hand",
                 description="End-effector id.",
             ),
@@ -332,6 +347,26 @@ def generate_launch_description():
                 "use_rviz",
                 default_value="true",
                 description="Launch RViz.",
+            ),
+            DeclareLaunchArgument(
+                "trajectory_execution_duration_scaling",
+                default_value="1.2",
+                description="Allowed execution duration scaling for move_group.",
+            ),
+            DeclareLaunchArgument(
+                "trajectory_execution_goal_margin",
+                default_value="0.5",
+                description="Allowed goal duration margin for move_group.",
+            ),
+            DeclareLaunchArgument(
+                "capabilities",
+                default_value="",
+                description="Additional MoveGroup capabilities.",
+            ),
+            DeclareLaunchArgument(
+                "disable_capabilities",
+                default_value="",
+                description="Disabled MoveGroup capabilities.",
             ),
             robot_state_publisher,
             joint_state_publisher,
