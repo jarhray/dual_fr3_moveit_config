@@ -1,0 +1,445 @@
+jhr@test-X870-GAMING-X-WIFI7:~/ws_franka$ ros2 launch dual_fr3_trunking_mtc mtc_prototype.launch.py   use_fake_hardware:=false   left_robot_ip:=192.168.1.2   right_robot_ip:=192.168.2.2   start_gripper:=true   plan:=true   execute:=true
+[INFO] [launch]: All log files can be found below /home/jhr/.ros/log/2026-08-29-16-51-29-873049-test-X870-GAMING-X-WIFI7-3133715
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [robot_state_publisher-1]: process started with pid [3133731]
+[INFO] [joint_state_publisher-2]: process started with pid [3133733]
+[INFO] [move_group-3]: process started with pid [3133735]
+[INFO] [ros2_control_node-4]: process started with pid [3133737]
+[INFO] [ros2_control_node-5]: process started with pid [3133739]
+[INFO] [rviz2-6]: process started with pid [3133741]
+[INFO] [franka_gripper_node-7]: process started with pid [3133743]
+[INFO] [franka_gripper_node-8]: process started with pid [3133745]
+[INFO] [spawner-9]: process started with pid [3133747]
+[INFO] [spawner-10]: process started with pid [3133749]
+[INFO] [spawner-11]: process started with pid [3133751]
+[INFO] [spawner-12]: process started with pid [3133753]
+[INFO] [spawner-13]: process started with pid [3133755]
+[INFO] [spawner-14]: process started with pid [3133757]
+[INFO] [python3-15]: process started with pid [3133759]
+[franka_gripper_node-8] [INFO] [1787993490.522234565] [right_franka_gripper]: Trying to establish a connection with the gripper
+[franka_gripper_node-7] [INFO] [1787993490.522704517] [left_franka_gripper]: Trying to establish a connection with the gripper
+[franka_gripper_node-8] [INFO] [1787993490.522903479] [right_franka_gripper]: Connected to gripper
+[franka_gripper_node-7] [INFO] [1787993490.523682556] [left_franka_gripper]: Connected to gripper
+[ros2_control_node-4] [WARN] [1787993490.529705174] [left.controller_manager]: [Deprecated] Passing the robot description parameter directly to the control_manager node is deprecated. Use '~/robot_description' topic from 'robot_state_publisher' instead.
+[move_group-3] [WARN] [1787993490.529781000] [move_group.move_group]: Falling back to using the the move_group node namespace (deprecated behavior).
+[ros2_control_node-4] [INFO] [1787993490.530159677] [resource_manager]: Loading hardware 'left_FrankaHardwareInterface' 
+[ros2_control_node-5] [WARN] [1787993490.532661463] [right.controller_manager]: [Deprecated] Passing the robot description parameter directly to the control_manager node is deprecated. Use '~/robot_description' topic from 'robot_state_publisher' instead.
+[ros2_control_node-5] [INFO] [1787993490.533088733] [resource_manager]: Loading hardware 'right_FrankaHardwareInterface' 
+[ros2_control_node-4] [INFO] [1787993490.542276061] [resource_manager]: Initialize hardware 'left_FrankaHardwareInterface' 
+[ros2_control_node-4] [INFO] [1787993490.542609942] [FrankaHardwareInterface]: Parsed Franka ros2_control interface version: 0.1.0
+[ros2_control_node-4] [INFO] [1787993490.542617366] [FrankaHardwareInterface]: Connecting to robot at "192.168.1.2" ...
+[robot_state_publisher-1] [INFO] [1787993490.542981345] [robot_state_publisher]: got segment left_fr3_hand
+[robot_state_publisher-1] [INFO] [1787993490.543080586] [robot_state_publisher]: got segment left_fr3_hand_tcp
+[robot_state_publisher-1] [INFO] [1787993490.543086788] [robot_state_publisher]: got segment left_fr3_leftfinger
+[robot_state_publisher-1] [INFO] [1787993490.543090094] [robot_state_publisher]: got segment left_fr3_link0
+[robot_state_publisher-1] [INFO] [1787993490.543092960] [robot_state_publisher]: got segment left_fr3_link0_accelerometer_bottom
+[robot_state_publisher-1] [INFO] [1787993490.543096126] [robot_state_publisher]: got segment left_fr3_link0_accelerometer_top
+[robot_state_publisher-1] [INFO] [1787993490.543099182] [robot_state_publisher]: got segment left_fr3_link1
+[robot_state_publisher-1] [INFO] [1787993490.543102198] [robot_state_publisher]: got segment left_fr3_link1_accelerometer_bottom
+[robot_state_publisher-1] [INFO] [1787993490.543104983] [robot_state_publisher]: got segment left_fr3_link1_accelerometer_top
+[robot_state_publisher-1] [INFO] [1787993490.543107848] [robot_state_publisher]: got segment left_fr3_link2
+[robot_state_publisher-1] [INFO] [1787993490.543110644] [robot_state_publisher]: got segment left_fr3_link2_accelerometer_bottom
+[robot_state_publisher-1] [INFO] [1787993490.543113499] [robot_state_publisher]: got segment left_fr3_link2_accelerometer_top
+[robot_state_publisher-1] [INFO] [1787993490.543116154] [robot_state_publisher]: got segment left_fr3_link3
+[robot_state_publisher-1] [INFO] [1787993490.543118890] [robot_state_publisher]: got segment left_fr3_link3_accelerometer_bottom
+[robot_state_publisher-1] [INFO] [1787993490.543121595] [robot_state_publisher]: got segment left_fr3_link3_accelerometer_top
+[robot_state_publisher-1] [INFO] [1787993490.543124180] [robot_state_publisher]: got segment left_fr3_link4
+[robot_state_publisher-1] [INFO] [1787993490.543126875] [robot_state_publisher]: got segment left_fr3_link4_accelerometer_bottom
+[robot_state_publisher-1] [INFO] [1787993490.543129450] [robot_state_publisher]: got segment left_fr3_link4_accelerometer_top
+[robot_state_publisher-1] [INFO] [1787993490.543132055] [robot_state_publisher]: got segment left_fr3_link5
+[robot_state_publisher-1] [INFO] [1787993490.543134680] [robot_state_publisher]: got segment left_fr3_link5_accelerometer_bottom
+[robot_state_publisher-1] [INFO] [1787993490.543137385] [robot_state_publisher]: got segment left_fr3_link5_accelerometer_top
+[robot_state_publisher-1] [INFO] [1787993490.543140060] [robot_state_publisher]: got segment left_fr3_link6
+[robot_state_publisher-1] [INFO] [1787993490.543143096] [robot_state_publisher]: got segment left_fr3_link7
+[robot_state_publisher-1] [INFO] [1787993490.543145881] [robot_state_publisher]: got segment left_fr3_link8
+[robot_state_publisher-1] [INFO] [1787993490.543148937] [robot_state_publisher]: got segment left_fr3_mount
+[robot_state_publisher-1] [INFO] [1787993490.543151522] [robot_state_publisher]: got segment left_fr3_rightfinger
+[robot_state_publisher-1] [INFO] [1787993490.543154238] [robot_state_publisher]: got segment plate
+[robot_state_publisher-1] [INFO] [1787993490.543157253] [robot_state_publisher]: got segment right_fr3_hand
+[robot_state_publisher-1] [INFO] [1787993490.543160449] [robot_state_publisher]: got segment right_fr3_hand_tcp
+[robot_state_publisher-1] [INFO] [1787993490.543163064] [robot_state_publisher]: got segment right_fr3_leftfinger
+[robot_state_publisher-1] [INFO] [1787993490.543166050] [robot_state_publisher]: got segment right_fr3_link0
+[robot_state_publisher-1] [INFO] [1787993490.543169046] [robot_state_publisher]: got segment right_fr3_link0_accelerometer_bottom
+[robot_state_publisher-1] [INFO] [1787993490.543171821] [robot_state_publisher]: got segment right_fr3_link0_accelerometer_top
+[robot_state_publisher-1] [INFO] [1787993490.543174436] [robot_state_publisher]: got segment right_fr3_link1
+[robot_state_publisher-1] [INFO] [1787993490.543177152] [robot_state_publisher]: got segment right_fr3_link1_accelerometer_bottom
+[robot_state_publisher-1] [INFO] [1787993490.543179767] [robot_state_publisher]: got segment right_fr3_link1_accelerometer_top
+[robot_state_publisher-1] [INFO] [1787993490.543182612] [robot_state_publisher]: got segment right_fr3_link2
+[robot_state_publisher-1] [INFO] [1787993490.543185437] [robot_state_publisher]: got segment right_fr3_link2_accelerometer_bottom
+[robot_state_publisher-1] [INFO] [1787993490.543188403] [robot_state_publisher]: got segment right_fr3_link2_accelerometer_top
+[robot_state_publisher-1] [INFO] [1787993490.543197631] [robot_state_publisher]: got segment right_fr3_link3
+[robot_state_publisher-1] [INFO] [1787993490.543200356] [robot_state_publisher]: got segment right_fr3_link3_accelerometer_bottom
+[robot_state_publisher-1] [INFO] [1787993490.543203412] [robot_state_publisher]: got segment right_fr3_link3_accelerometer_top
+[robot_state_publisher-1] [INFO] [1787993490.543206057] [robot_state_publisher]: got segment right_fr3_link4
+[robot_state_publisher-1] [INFO] [1787993490.543208953] [robot_state_publisher]: got segment right_fr3_link4_accelerometer_bottom
+[robot_state_publisher-1] [INFO] [1787993490.543211788] [robot_state_publisher]: got segment right_fr3_link4_accelerometer_top
+[robot_state_publisher-1] [INFO] [1787993490.543242888] [robot_state_publisher]: got segment right_fr3_link5
+[robot_state_publisher-1] [INFO] [1787993490.543246004] [robot_state_publisher]: got segment right_fr3_link5_accelerometer_bottom
+[robot_state_publisher-1] [INFO] [1787993490.543248699] [robot_state_publisher]: got segment right_fr3_link5_accelerometer_top
+[robot_state_publisher-1] [INFO] [1787993490.543251444] [robot_state_publisher]: got segment right_fr3_link6
+[robot_state_publisher-1] [INFO] [1787993490.543254039] [robot_state_publisher]: got segment right_fr3_link7
+[robot_state_publisher-1] [INFO] [1787993490.543256754] [robot_state_publisher]: got segment right_fr3_link8
+[robot_state_publisher-1] [INFO] [1787993490.543259720] [robot_state_publisher]: got segment right_fr3_mount
+[robot_state_publisher-1] [INFO] [1787993490.543262886] [robot_state_publisher]: got segment right_fr3_rightfinger
+[robot_state_publisher-1] [INFO] [1787993490.543265631] [robot_state_publisher]: got segment trunking
+[robot_state_publisher-1] [INFO] [1787993490.543268487] [robot_state_publisher]: got segment worktable
+[robot_state_publisher-1] [INFO] [1787993490.543271623] [robot_state_publisher]: got segment world
+[ros2_control_node-4] [INFO] [1787993490.544296251] [FrankaHardwareInterface]: libfranka: Setting thread priority to the highest possible value.
+[ros2_control_node-5] [INFO] [1787993490.544493520] [resource_manager]: Initialize hardware 'right_FrankaHardwareInterface' 
+[ros2_control_node-5] [INFO] [1787993490.544880954] [FrankaHardwareInterface]: Parsed Franka ros2_control interface version: 0.1.0
+[ros2_control_node-5] [INFO] [1787993490.544892196] [FrankaHardwareInterface]: Connecting to robot at "192.168.2.2" ...
+[ros2_control_node-5] [INFO] [1787993490.545367710] [FrankaHardwareInterface]: libfranka: Setting thread priority to the highest possible value.
+[move_group-3] [INFO] [1787993490.550351704] [moveit_rdf_loader.rdf_loader]: Loaded robot model in 0.0204557 seconds
+[move_group-3] [INFO] [1787993490.550380429] [moveit_robot_model.robot_model]: Loading robot model 'dual_fr3'...
+[move_group-3] [INFO] [1787993490.550392101] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[ros2_control_node-4] [INFO] [1787993490.553533365] [FrankaHardwareInterface]: Successfully connected to robot
+[ros2_control_node-4] [INFO] [1787993490.559395515] [left.service_server]: Service started
+[ros2_control_node-5] [INFO] [1787993490.554609853] [FrankaHardwareInterface]: Successfully connected to robot
+[ros2_control_node-5] [INFO] [1787993490.561422509] [right.service_server]: Service started
+[ros2_control_node-5] [INFO] [1787993490.669226273] [right.action_server]: Action server started
+[ros2_control_node-5] [INFO] [1787993490.669305575] [resource_manager]: Successful initialization of hardware 'right_FrankaHardwareInterface'
+[ros2_control_node-5] [INFO] [1787993490.669444652] [FrankaHardwareInterface]: Register joint-based command interfaces
+[ros2_control_node-5] [INFO] [1787993490.669475481] [FrankaHardwareInterface]: Registering command interface: right_fr3_joint1 for command interface position with index 0
+[ros2_control_node-5] [INFO] [1787993490.669479840] [FrankaHardwareInterface]: Registering command interface: right_fr3_joint1 for command interface velocity with index 0
+[ros2_control_node-5] [INFO] [1787993490.669482505] [FrankaHardwareInterface]: Registering command interface: right_fr3_joint1 for command interface effort with index 0
+[ros2_control_node-5] [INFO] [1787993490.669484970] [FrankaHardwareInterface]: Registering command interface: right_fr3_joint2 for command interface position with index 1
+[ros2_control_node-5] [INFO] [1787993490.669487354] [FrankaHardwareInterface]: Registering command interface: right_fr3_joint2 for command interface velocity with index 1
+[ros2_control_node-5] [INFO] [1787993490.669489488] [FrankaHardwareInterface]: Registering command interface: right_fr3_joint2 for command interface effort with index 1
+[ros2_control_node-5] [INFO] [1787993490.669491733] [FrankaHardwareInterface]: Registering command interface: right_fr3_joint3 for command interface position with index 2
+[ros2_control_node-5] [INFO] [1787993490.669508024] [FrankaHardwareInterface]: Registering command interface: right_fr3_joint3 for command interface velocity with index 2
+[ros2_control_node-5] [INFO] [1787993490.669510629] [FrankaHardwareInterface]: Registering command interface: right_fr3_joint3 for command interface effort with index 2
+[ros2_control_node-5] [INFO] [1787993490.669513364] [FrankaHardwareInterface]: Registering command interface: right_fr3_joint4 for command interface position with index 3
+[ros2_control_node-5] [INFO] [1787993490.669515909] [FrankaHardwareInterface]: Registering command interface: right_fr3_joint4 for command interface velocity with index 3
+[ros2_control_node-5] [INFO] [1787993490.669518534] [FrankaHardwareInterface]: Registering command interface: right_fr3_joint4 for command interface effort with index 3
+[ros2_control_node-5] [INFO] [1787993490.669520929] [FrankaHardwareInterface]: Registering command interface: right_fr3_joint5 for command interface position with index 4
+[ros2_control_node-5] [INFO] [1787993490.669523223] [FrankaHardwareInterface]: Registering command interface: right_fr3_joint5 for command interface velocity with index 4
+[ros2_control_node-5] [INFO] [1787993490.669526389] [FrankaHardwareInterface]: Registering command interface: right_fr3_joint5 for command interface effort with index 4
+[ros2_control_node-5] [INFO] [1787993490.669528674] [FrankaHardwareInterface]: Registering command interface: right_fr3_joint6 for command interface position with index 5
+[ros2_control_node-5] [INFO] [1787993490.669530908] [FrankaHardwareInterface]: Registering command interface: right_fr3_joint6 for command interface velocity with index 5
+[ros2_control_node-5] [INFO] [1787993490.669533152] [FrankaHardwareInterface]: Registering command interface: right_fr3_joint6 for command interface effort with index 5
+[ros2_control_node-5] [INFO] [1787993490.669535487] [FrankaHardwareInterface]: Registering command interface: right_fr3_joint7 for command interface position with index 6
+[ros2_control_node-5] [INFO] [1787993490.669537911] [FrankaHardwareInterface]: Registering command interface: right_fr3_joint7 for command interface velocity with index 6
+[ros2_control_node-5] [INFO] [1787993490.669568240] [FrankaHardwareInterface]: Registering command interface: right_fr3_joint7 for command interface effort with index 6
+[ros2_control_node-5] [INFO] [1787993490.669570554] [FrankaHardwareInterface]: Register general purpose command interfaces
+[ros2_control_node-5] [INFO] [1787993490.669590001] [FrankaHardwareInterface]: Registering command interface: right_vx for command interface cartesian_velocity with index 0
+[ros2_control_node-5] [INFO] [1787993490.669594179] [FrankaHardwareInterface]: Registering command interface: right_vy for command interface cartesian_velocity with index 1
+[ros2_control_node-5] [INFO] [1787993490.669597205] [FrankaHardwareInterface]: Registering command interface: right_vz for command interface cartesian_velocity with index 2
+[ros2_control_node-5] [INFO] [1787993490.669599931] [FrankaHardwareInterface]: Registering command interface: right_wx for command interface cartesian_velocity with index 3
+[ros2_control_node-5] [INFO] [1787993490.669603217] [FrankaHardwareInterface]: Registering command interface: right_wy for command interface cartesian_velocity with index 4
+[ros2_control_node-5] [INFO] [1787993490.669605992] [FrankaHardwareInterface]: Registering command interface: right_wz for command interface cartesian_velocity with index 5
+[ros2_control_node-5] [INFO] [1787993490.669609659] [FrankaHardwareInterface]: Registering command interface: right_0 for command interface cartesian_pose_command with index 0
+[ros2_control_node-5] [INFO] [1787993490.669617665] [FrankaHardwareInterface]: Registering command interface: right_1 for command interface cartesian_pose_command with index 1
+[ros2_control_node-5] [INFO] [1787993490.669620290] [FrankaHardwareInterface]: Registering command interface: right_2 for command interface cartesian_pose_command with index 2
+[ros2_control_node-5] [INFO] [1787993490.669623165] [FrankaHardwareInterface]: Registering command interface: right_3 for command interface cartesian_pose_command with index 3
+[ros2_control_node-5] [INFO] [1787993490.669626522] [FrankaHardwareInterface]: Registering command interface: right_4 for command interface cartesian_pose_command with index 4
+[ros2_control_node-5] [INFO] [1787993490.669629447] [FrankaHardwareInterface]: Registering command interface: right_5 for command interface cartesian_pose_command with index 5
+[ros2_control_node-5] [INFO] [1787993490.669632162] [FrankaHardwareInterface]: Registering command interface: right_6 for command interface cartesian_pose_command with index 6
+[ros2_control_node-5] [INFO] [1787993490.669634787] [FrankaHardwareInterface]: Registering command interface: right_7 for command interface cartesian_pose_command with index 7
+[ros2_control_node-5] [INFO] [1787993490.669637443] [FrankaHardwareInterface]: Registering command interface: right_8 for command interface cartesian_pose_command with index 8
+[ros2_control_node-5] [INFO] [1787993490.669639997] [FrankaHardwareInterface]: Registering command interface: right_9 for command interface cartesian_pose_command with index 9
+[ros2_control_node-5] [INFO] [1787993490.669642643] [FrankaHardwareInterface]: Registering command interface: right_10 for command interface cartesian_pose_command with index 10
+[ros2_control_node-5] [INFO] [1787993490.669645187] [FrankaHardwareInterface]: Registering command interface: right_11 for command interface cartesian_pose_command with index 11
+[ros2_control_node-5] [INFO] [1787993490.669647752] [FrankaHardwareInterface]: Registering command interface: right_12 for command interface cartesian_pose_command with index 12
+[ros2_control_node-5] [INFO] [1787993490.669650297] [FrankaHardwareInterface]: Registering command interface: right_13 for command interface cartesian_pose_command with index 13
+[ros2_control_node-5] [INFO] [1787993490.669652642] [FrankaHardwareInterface]: Registering command interface: right_14 for command interface cartesian_pose_command with index 14
+[ros2_control_node-5] [INFO] [1787993490.669654896] [FrankaHardwareInterface]: Registering command interface: right_15 for command interface cartesian_pose_command with index 15
+[ros2_control_node-5] [INFO] [1787993490.669657391] [FrankaHardwareInterface]: Registering command interface: right_joint_3_position for command interface elbow_command with index 0
+[ros2_control_node-5] [INFO] [1787993490.669659745] [FrankaHardwareInterface]: Registering command interface: right_joint_4_sign for command interface elbow_command with index 1
+[ros2_control_node-5] [INFO] [1787993490.669729690] [resource_manager]: 'configure' hardware 'right_FrankaHardwareInterface' 
+[ros2_control_node-5] [INFO] [1787993490.669740921] [resource_manager]: Successful 'configure' of hardware 'right_FrankaHardwareInterface'
+[ros2_control_node-5] [INFO] [1787993490.669751432] [resource_manager]: 'activate' hardware 'right_FrankaHardwareInterface' 
+[ros2_control_node-5] [INFO] [1787993490.669852656] [FrankaHardwareInterface]: Started
+[ros2_control_node-5] [INFO] [1787993490.669855812] [resource_manager]: Successful 'activate' of hardware 'right_FrankaHardwareInterface'
+[ros2_control_node-5] [WARN] [1787993490.672676189] [right.controller_manager]: Unable to lock the memory: 'No proper privileges to lock the memory!'
+[ros2_control_node-5] [INFO] [1787993490.672692120] [right.controller_manager]: update rate is 1000 Hz
+[ros2_control_node-5] [INFO] [1787993490.672696709] [right.controller_manager]: Spawning controller_manager RT thread with scheduler priority: 98
+[ros2_control_node-5] [INFO] [1787993490.672760441] [right.controller_manager]: Successful set up FIFO RT scheduling policy with priority 98.
+[ros2_control_node-4] [INFO] [1787993490.673195898] [left.action_server]: Action server started
+[ros2_control_node-4] [INFO] [1787993490.673273246] [resource_manager]: Successful initialization of hardware 'left_FrankaHardwareInterface'
+[ros2_control_node-4] [INFO] [1787993490.673403877] [FrankaHardwareInterface]: Register joint-based command interfaces
+[ros2_control_node-4] [INFO] [1787993490.673431941] [FrankaHardwareInterface]: Registering command interface: left_fr3_joint1 for command interface position with index 0
+[ros2_control_node-4] [INFO] [1787993490.673435758] [FrankaHardwareInterface]: Registering command interface: left_fr3_joint1 for command interface velocity with index 0
+[ros2_control_node-4] [INFO] [1787993490.673438353] [FrankaHardwareInterface]: Registering command interface: left_fr3_joint1 for command interface effort with index 0
+[ros2_control_node-4] [INFO] [1787993490.673441009] [FrankaHardwareInterface]: Registering command interface: left_fr3_joint2 for command interface position with index 1
+[ros2_control_node-4] [INFO] [1787993490.673443403] [FrankaHardwareInterface]: Registering command interface: left_fr3_joint2 for command interface velocity with index 1
+[ros2_control_node-4] [INFO] [1787993490.673445798] [FrankaHardwareInterface]: Registering command interface: left_fr3_joint2 for command interface effort with index 1
+[ros2_control_node-4] [INFO] [1787993490.673448112] [FrankaHardwareInterface]: Registering command interface: left_fr3_joint3 for command interface position with index 2
+[ros2_control_node-4] [INFO] [1787993490.673462660] [FrankaHardwareInterface]: Registering command interface: left_fr3_joint3 for command interface velocity with index 2
+[ros2_control_node-4] [INFO] [1787993490.673464955] [FrankaHardwareInterface]: Registering command interface: left_fr3_joint3 for command interface effort with index 2
+[ros2_control_node-4] [INFO] [1787993490.673467399] [FrankaHardwareInterface]: Registering command interface: left_fr3_joint4 for command interface position with index 3
+[ros2_control_node-4] [INFO] [1787993490.673469573] [FrankaHardwareInterface]: Registering command interface: left_fr3_joint4 for command interface velocity with index 3
+[ros2_control_node-4] [INFO] [1787993490.673471808] [FrankaHardwareInterface]: Registering command interface: left_fr3_joint4 for command interface effort with index 3
+[ros2_control_node-4] [INFO] [1787993490.673474142] [FrankaHardwareInterface]: Registering command interface: left_fr3_joint5 for command interface position with index 4
+[ros2_control_node-4] [INFO] [1787993490.673476517] [FrankaHardwareInterface]: Registering command interface: left_fr3_joint5 for command interface velocity with index 4
+[ros2_control_node-4] [INFO] [1787993490.673479933] [FrankaHardwareInterface]: Registering command interface: left_fr3_joint5 for command interface effort with index 4
+[ros2_control_node-4] [INFO] [1787993490.673482438] [FrankaHardwareInterface]: Registering command interface: left_fr3_joint6 for command interface position with index 5
+[ros2_control_node-4] [INFO] [1787993490.673484572] [FrankaHardwareInterface]: Registering command interface: left_fr3_joint6 for command interface velocity with index 5
+[ros2_control_node-4] [INFO] [1787993490.673486716] [FrankaHardwareInterface]: Registering command interface: left_fr3_joint6 for command interface effort with index 5
+[ros2_control_node-4] [INFO] [1787993490.673488991] [FrankaHardwareInterface]: Registering command interface: left_fr3_joint7 for command interface position with index 6
+[ros2_control_node-4] [INFO] [1787993490.673491335] [FrankaHardwareInterface]: Registering command interface: left_fr3_joint7 for command interface velocity with index 6
+[ros2_control_node-4] [INFO] [1787993490.673521944] [FrankaHardwareInterface]: Registering command interface: left_fr3_joint7 for command interface effort with index 6
+[ros2_control_node-4] [INFO] [1787993490.673524178] [FrankaHardwareInterface]: Register general purpose command interfaces
+[ros2_control_node-4] [INFO] [1787993490.673543325] [FrankaHardwareInterface]: Registering command interface: left_vx for command interface cartesian_velocity with index 0
+[ros2_control_node-4] [INFO] [1787993490.673547914] [FrankaHardwareInterface]: Registering command interface: left_vy for command interface cartesian_velocity with index 1
+[ros2_control_node-4] [INFO] [1787993490.673550679] [FrankaHardwareInterface]: Registering command interface: left_vz for command interface cartesian_velocity with index 2
+[ros2_control_node-4] [INFO] [1787993490.673553505] [FrankaHardwareInterface]: Registering command interface: left_wx for command interface cartesian_velocity with index 3
+[ros2_control_node-4] [INFO] [1787993490.673556450] [FrankaHardwareInterface]: Registering command interface: left_wy for command interface cartesian_velocity with index 4
+[ros2_control_node-4] [INFO] [1787993490.673560228] [FrankaHardwareInterface]: Registering command interface: left_wz for command interface cartesian_velocity with index 5
+[ros2_control_node-4] [INFO] [1787993490.673563163] [FrankaHardwareInterface]: Registering command interface: left_0 for command interface cartesian_pose_command with index 0
+[ros2_control_node-4] [INFO] [1787993490.673568804] [FrankaHardwareInterface]: Registering command interface: left_1 for command interface cartesian_pose_command with index 1
+[ros2_control_node-4] [INFO] [1787993490.673571459] [FrankaHardwareInterface]: Registering command interface: left_2 for command interface cartesian_pose_command with index 2
+[ros2_control_node-4] [INFO] [1787993490.673574285] [FrankaHardwareInterface]: Registering command interface: left_3 for command interface cartesian_pose_command with index 3
+[ros2_control_node-4] [INFO] [1787993490.673577080] [FrankaHardwareInterface]: Registering command interface: left_4 for command interface cartesian_pose_command with index 4
+[ros2_control_node-4] [INFO] [1787993490.673579875] [FrankaHardwareInterface]: Registering command interface: left_5 for command interface cartesian_pose_command with index 5
+[ros2_control_node-4] [INFO] [1787993490.673582691] [FrankaHardwareInterface]: Registering command interface: left_6 for command interface cartesian_pose_command with index 6
+[ros2_control_node-4] [INFO] [1787993490.673585676] [FrankaHardwareInterface]: Registering command interface: left_7 for command interface cartesian_pose_command with index 7
+[ros2_control_node-4] [INFO] [1787993490.673588742] [FrankaHardwareInterface]: Registering command interface: left_8 for command interface cartesian_pose_command with index 8
+[ros2_control_node-4] [INFO] [1787993490.673591528] [FrankaHardwareInterface]: Registering command interface: left_9 for command interface cartesian_pose_command with index 9
+[ros2_control_node-4] [INFO] [1787993490.673594233] [FrankaHardwareInterface]: Registering command interface: left_10 for command interface cartesian_pose_command with index 10
+[ros2_control_node-4] [INFO] [1787993490.673596858] [FrankaHardwareInterface]: Registering command interface: left_11 for command interface cartesian_pose_command with index 11
+[ros2_control_node-4] [INFO] [1787993490.673599273] [FrankaHardwareInterface]: Registering command interface: left_12 for command interface cartesian_pose_command with index 12
+[ros2_control_node-4] [INFO] [1787993490.673601647] [FrankaHardwareInterface]: Registering command interface: left_13 for command interface cartesian_pose_command with index 13
+[ros2_control_node-4] [INFO] [1787993490.673604152] [FrankaHardwareInterface]: Registering command interface: left_14 for command interface cartesian_pose_command with index 14
+[ros2_control_node-4] [INFO] [1787993490.673606897] [FrankaHardwareInterface]: Registering command interface: left_15 for command interface cartesian_pose_command with index 15
+[ros2_control_node-4] [INFO] [1787993490.673609693] [FrankaHardwareInterface]: Registering command interface: left_joint_3_position for command interface elbow_command with index 0
+[ros2_control_node-4] [INFO] [1787993490.673612217] [FrankaHardwareInterface]: Registering command interface: left_joint_4_sign for command interface elbow_command with index 1
+[ros2_control_node-4] [INFO] [1787993490.673682282] [resource_manager]: 'configure' hardware 'left_FrankaHardwareInterface' 
+[ros2_control_node-4] [INFO] [1787993490.673687492] [resource_manager]: Successful 'configure' of hardware 'left_FrankaHardwareInterface'
+[ros2_control_node-4] [INFO] [1787993490.673703843] [resource_manager]: 'activate' hardware 'left_FrankaHardwareInterface' 
+[ros2_control_node-4] [INFO] [1787993490.673804336] [FrankaHardwareInterface]: Started
+[ros2_control_node-4] [INFO] [1787993490.673807272] [resource_manager]: Successful 'activate' of hardware 'left_FrankaHardwareInterface'
+[ros2_control_node-4] [WARN] [1787993490.679958968] [left.controller_manager]: Unable to lock the memory: 'No proper privileges to lock the memory!'
+[ros2_control_node-4] [INFO] [1787993490.679983085] [left.controller_manager]: update rate is 1000 Hz
+[ros2_control_node-4] [INFO] [1787993490.679988295] [left.controller_manager]: Spawning controller_manager RT thread with scheduler priority: 98
+[ros2_control_node-4] [INFO] [1787993490.680037519] [left.controller_manager]: Successful set up FIFO RT scheduling policy with priority 98.
+[spawner-12] [INFO] [1787993490.776690254] [right.spawner_right_fr3_arm_controller]: waiting for service /right/controller_manager/list_controllers to become available...
+[spawner-11] [INFO] [1787993490.806392979] [right.spawner_joint_state_broadcaster]: waiting for service /right/controller_manager/list_controllers to become available...
+[joint_state_publisher-2] [INFO] [1787993490.806987812] [joint_state_publisher]: Waiting for robot_description to be published on the robot_description topic...
+[move_group-3] [INFO] [1787993490.862215355] [moveit_ros.planning_scene_monitor.planning_scene_monitor]: Publishing maintained planning scene on 'monitored_planning_scene'
+[move_group-3] [INFO] [1787993490.862331889] [moveit.ros_planning_interface.moveit_cpp]: Listening to 'joint_states' for joint states
+[move_group-3] [INFO] [1787993490.862821940] [moveit_ros.current_state_monitor]: Listening to joint states on topic 'joint_states'
+[move_group-3] [INFO] [1787993490.863126285] [moveit_ros.planning_scene_monitor.planning_scene_monitor]: Listening to '/attached_collision_object' for attached collision objects
+[move_group-3] [INFO] [1787993490.863140211] [moveit_ros.planning_scene_monitor.planning_scene_monitor]: Starting planning scene monitor
+[move_group-3] [INFO] [1787993490.863373459] [moveit_ros.planning_scene_monitor.planning_scene_monitor]: Listening to '/planning_scene'
+[move_group-3] [INFO] [1787993490.863383348] [moveit_ros.planning_scene_monitor.planning_scene_monitor]: Starting world geometry update monitor for collision objects, attached objects, octomap updates.
+[move_group-3] [INFO] [1787993490.863613280] [moveit_ros.planning_scene_monitor.planning_scene_monitor]: Listening to 'collision_object'
+[move_group-3] [INFO] [1787993490.863858872] [moveit_ros.planning_scene_monitor.planning_scene_monitor]: Listening to 'planning_scene_world' for planning scene world geometry
+[move_group-3] [WARN] [1787993490.864514070] [moveit.ros.occupancy_map_monitor.middleware_handle]: Resolution not specified for Octomap. Assuming resolution = 0.1 instead
+[move_group-3] [ERROR] [1787993490.864525903] [moveit.ros.occupancy_map_monitor.middleware_handle]: No 3D sensor plugin(s) defined for octomap updates
+[ros2_control_node-4] [INFO] [1787993490.898278848] [left.controller_manager]: Loading controller 'joint_state_broadcaster'
+[spawner-9] [INFO] [1787993490.909338601] [left.spawner_joint_state_broadcaster]: Loaded joint_state_broadcaster
+[ros2_control_node-4] [INFO] [1787993490.909889610] [left.controller_manager]: Configuring controller 'joint_state_broadcaster'
+[ros2_control_node-4] [INFO] [1787993490.909943884] [left.joint_state_broadcaster]: 'joints' or 'interfaces' parameter is empty. All available state interfaces will be published
+[spawner-9] [INFO] [1787993490.914371228] [left.spawner_joint_state_broadcaster]: Configured and activated joint_state_broadcaster
+[ros2_control_node-5] [INFO] [1787993490.942162592] [right.controller_manager]: Loading controller 'joint_state_broadcaster'
+[ros2_control_node-4] [INFO] [1787993490.945705457] [left.controller_manager]: Loading controller 'left_fr3_arm_controller'
+[spawner-11] [INFO] [1787993490.947441912] [right.spawner_joint_state_broadcaster]: Loaded joint_state_broadcaster
+[ros2_control_node-5] [INFO] [1787993490.948126096] [right.controller_manager]: Configuring controller 'joint_state_broadcaster'
+[ros2_control_node-5] [INFO] [1787993490.948185781] [right.joint_state_broadcaster]: 'joints' or 'interfaces' parameter is empty. All available state interfaces will be published
+[ros2_control_node-4] [WARN] [1787993490.952731523] [left.left_fr3_arm_controller]: [Deprecated]: "allow_nonzero_velocity_at_trajectory_end" is set to true. The default behavior will change to false.
+[spawner-11] [INFO] [1787993490.954155698] [right.spawner_joint_state_broadcaster]: Configured and activated joint_state_broadcaster
+[spawner-10] [INFO] [1787993490.959251396] [left.spawner_left_fr3_arm_controller]: Loaded left_fr3_arm_controller
+[ros2_control_node-4] [INFO] [1787993490.959884632] [left.controller_manager]: Configuring controller 'left_fr3_arm_controller'
+[ros2_control_node-4] [INFO] [1787993490.959985166] [left.left_fr3_arm_controller]: No specific joint names are used for command interfaces. Using 'joints' parameter.
+[ros2_control_node-4] [WARN] [1787993490.960009853] [left.left_fr3_arm_controller]: 'ff_velocity_scale' parameters is not defined under 'gains.<joint_name>.' structure. Maybe you are using deprecated format 'ff_velocity_scale/<joint_name>'!
+[ros2_control_node-4] [WARN] [1787993490.960086731] [left.left_fr3_arm_controller]: 'ff_velocity_scale' parameters is not defined under 'gains.<joint_name>.' structure. Maybe you are using deprecated format 'ff_velocity_scale/<joint_name>'!
+[ros2_control_node-4] [WARN] [1787993490.960132609] [left.left_fr3_arm_controller]: 'ff_velocity_scale' parameters is not defined under 'gains.<joint_name>.' structure. Maybe you are using deprecated format 'ff_velocity_scale/<joint_name>'!
+[ros2_control_node-4] [WARN] [1787993490.960182795] [left.left_fr3_arm_controller]: 'ff_velocity_scale' parameters is not defined under 'gains.<joint_name>.' structure. Maybe you are using deprecated format 'ff_velocity_scale/<joint_name>'!
+[ros2_control_node-4] [WARN] [1787993490.960223824] [left.left_fr3_arm_controller]: 'ff_velocity_scale' parameters is not defined under 'gains.<joint_name>.' structure. Maybe you are using deprecated format 'ff_velocity_scale/<joint_name>'!
+[ros2_control_node-4] [WARN] [1787993490.960262999] [left.left_fr3_arm_controller]: 'ff_velocity_scale' parameters is not defined under 'gains.<joint_name>.' structure. Maybe you are using deprecated format 'ff_velocity_scale/<joint_name>'!
+[ros2_control_node-4] [WARN] [1787993490.960302405] [left.left_fr3_arm_controller]: 'ff_velocity_scale' parameters is not defined under 'gains.<joint_name>.' structure. Maybe you are using deprecated format 'ff_velocity_scale/<joint_name>'!
+[ros2_control_node-4] [INFO] [1787993490.960338544] [left.left_fr3_arm_controller]: Command interfaces are [effort] and state interfaces are [position velocity].
+[ros2_control_node-4] [INFO] [1787993490.960350758] [left.left_fr3_arm_controller]: Using 'splines' interpolation method.
+[python3-15] [INFO] [1787993490.960584377] [dual_fr3_trunking_readiness_gate]: Waiting for both arm controllers and a complete 14-joint state
+[ros2_control_node-4] [INFO] [1787993490.960884213] [left.left_fr3_arm_controller]: Controller state will be published at 50.00 Hz.
+[python3-15] [INFO] [1787993490.961323787] [dual_fr3_trunking_readiness_gate]: Waiting for action servers: /move_action, /left/left_fr3_arm_controller/follow_joint_trajectory, /right/right_fr3_arm_controller/follow_joint_trajectory, /left_franka_gripper/gripper_action, /left_franka_gripper/homing, /execute_task_solution
+[python3-15] [INFO] [1787993490.961448426] [dual_fr3_trunking_readiness_gate]: Waiting for state: left controller_state has not been received
+[python3-15] [INFO] [1787993490.961560441] [dual_fr3_trunking_readiness_gate]: Waiting for state: right controller_state has not been received
+[ros2_control_node-4] [INFO] [1787993490.961843876] [left.left_fr3_arm_controller]: Action status changes will be monitored at 20.00 Hz.
+[spawner-10] [INFO] [1787993490.967601276] [left.spawner_left_fr3_arm_controller]: Configured and activated left_fr3_arm_controller
+[ros2_control_node-5] [INFO] [1787993491.029590555] [right.controller_manager]: Loading controller 'right_fr3_arm_controller'
+[ros2_control_node-5] [WARN] [1787993491.034864556] [right.right_fr3_arm_controller]: [Deprecated]: "allow_nonzero_velocity_at_trajectory_end" is set to true. The default behavior will change to false.
+[spawner-12] [INFO] [1787993491.036319861] [right.spawner_right_fr3_arm_controller]: Loaded right_fr3_arm_controller
+[ros2_control_node-5] [INFO] [1787993491.037014355] [right.controller_manager]: Configuring controller 'right_fr3_arm_controller'
+[ros2_control_node-5] [INFO] [1787993491.037099629] [right.right_fr3_arm_controller]: No specific joint names are used for command interfaces. Using 'joints' parameter.
+[ros2_control_node-5] [WARN] [1787993491.037119607] [right.right_fr3_arm_controller]: 'ff_velocity_scale' parameters is not defined under 'gains.<joint_name>.' structure. Maybe you are using deprecated format 'ff_velocity_scale/<joint_name>'!
+[ros2_control_node-5] [WARN] [1787993491.037183410] [right.right_fr3_arm_controller]: 'ff_velocity_scale' parameters is not defined under 'gains.<joint_name>.' structure. Maybe you are using deprecated format 'ff_velocity_scale/<joint_name>'!
+[ros2_control_node-5] [WARN] [1787993491.037219078] [right.right_fr3_arm_controller]: 'ff_velocity_scale' parameters is not defined under 'gains.<joint_name>.' structure. Maybe you are using deprecated format 'ff_velocity_scale/<joint_name>'!
+[ros2_control_node-5] [WARN] [1787993491.037249006] [right.right_fr3_arm_controller]: 'ff_velocity_scale' parameters is not defined under 'gains.<joint_name>.' structure. Maybe you are using deprecated format 'ff_velocity_scale/<joint_name>'!
+[ros2_control_node-5] [WARN] [1787993491.037275667] [right.right_fr3_arm_controller]: 'ff_velocity_scale' parameters is not defined under 'gains.<joint_name>.' structure. Maybe you are using deprecated format 'ff_velocity_scale/<joint_name>'!
+[ros2_control_node-5] [WARN] [1787993491.037307798] [right.right_fr3_arm_controller]: 'ff_velocity_scale' parameters is not defined under 'gains.<joint_name>.' structure. Maybe you are using deprecated format 'ff_velocity_scale/<joint_name>'!
+[ros2_control_node-5] [WARN] [1787993491.037335111] [right.right_fr3_arm_controller]: 'ff_velocity_scale' parameters is not defined under 'gains.<joint_name>.' structure. Maybe you are using deprecated format 'ff_velocity_scale/<joint_name>'!
+[ros2_control_node-5] [INFO] [1787993491.037365419] [right.right_fr3_arm_controller]: Command interfaces are [effort] and state interfaces are [position velocity].
+[ros2_control_node-5] [INFO] [1787993491.037377242] [right.right_fr3_arm_controller]: Using 'splines' interpolation method.
+[ros2_control_node-5] [INFO] [1787993491.037801396] [right.right_fr3_arm_controller]: Controller state will be published at 50.00 Hz.
+[ros2_control_node-5] [INFO] [1787993491.038607414] [right.right_fr3_arm_controller]: Action status changes will be monitored at 20.00 Hz.
+[INFO] [spawner-9]: process has finished cleanly [pid 3133747]
+[spawner-12] [INFO] [1787993491.044545019] [right.spawner_right_fr3_arm_controller]: Configured and activated right_fr3_arm_controller
+[INFO] [spawner-11]: process has finished cleanly [pid 3133751]
+[INFO] [spawner-10]: process has finished cleanly [pid 3133749]
+[INFO] [spawner-12]: process has finished cleanly [pid 3133753]
+[move_group-3] [INFO] [1787993491.198296935] [moveit.ros_planning_interface.moveit_cpp]: Loading planning pipeline 'move_group'
+[rviz2-6] [INFO] [1787993491.203928412] [rviz2]: Stereo is NOT SUPPORTED
+[rviz2-6] [INFO] [1787993491.204054333] [rviz2]: OpenGl version: 4.6 (GLSL 4.6)
+[move_group-3] [INFO] [1787993491.206139158] [moveit.ros_planning.planning_pipeline]: Using planning interface 'OMPL'
+[move_group-3] [INFO] [1787993491.208449105] [moveit_ros.add_time_optimal_parameterization]: Param 'move_group.path_tolerance' was not set. Using default value: 0.100000
+[move_group-3] [INFO] [1787993491.208463913] [moveit_ros.add_time_optimal_parameterization]: Param 'move_group.resample_dt' was not set. Using default value: 0.100000
+[move_group-3] [INFO] [1787993491.208465947] [moveit_ros.add_time_optimal_parameterization]: Param 'move_group.min_angle_change' was not set. Using default value: 0.001000
+[move_group-3] [INFO] [1787993491.208481487] [moveit_ros.fix_workspace_bounds]: Param 'move_group.default_workspace_bounds' was not set. Using default value: 10.000000
+[move_group-3] [INFO] [1787993491.208488621] [moveit_ros.fix_start_state_bounds]: Param 'move_group.start_state_max_bounds_error' was set to 0.100000
+[move_group-3] [INFO] [1787993491.208491046] [moveit_ros.fix_start_state_bounds]: Param 'move_group.start_state_max_dt' was not set. Using default value: 0.500000
+[move_group-3] [INFO] [1787993491.208495444] [moveit_ros.fix_start_state_collision]: Param 'move_group.start_state_max_dt' was not set. Using default value: 0.500000
+[move_group-3] [INFO] [1787993491.208497929] [moveit_ros.fix_start_state_collision]: Param 'move_group.jiggle_fraction' was not set. Using default value: 0.020000
+[move_group-3] [INFO] [1787993491.208505062] [moveit_ros.fix_start_state_collision]: Param 'move_group.max_sampling_attempts' was not set. Using default value: 100
+[move_group-3] [INFO] [1787993491.208509441] [moveit.ros_planning.planning_pipeline]: Using planning request adapter 'Add Time Optimal Parameterization'
+[move_group-3] [INFO] [1787993491.208512567] [moveit.ros_planning.planning_pipeline]: Using planning request adapter 'Resolve constraint frames to robot links'
+[move_group-3] [INFO] [1787993491.208514170] [moveit.ros_planning.planning_pipeline]: Using planning request adapter 'Fix Workspace Bounds'
+[move_group-3] [INFO] [1787993491.208515503] [moveit.ros_planning.planning_pipeline]: Using planning request adapter 'Fix Start State Bounds'
+[move_group-3] [INFO] [1787993491.208516665] [moveit.ros_planning.planning_pipeline]: Using planning request adapter 'Fix Start State In Collision'
+[move_group-3] [INFO] [1787993491.208517937] [moveit.ros_planning.planning_pipeline]: Using planning request adapter 'Fix Start State Path Constraints'
+[move_group-3] [INFO] [1787993491.218440597] [moveit.plugins.moveit_simple_controller_manager]: Added FollowJointTrajectory controller for /left/left_fr3_arm_controller
+[move_group-3] [INFO] [1787993491.219298164] [moveit.plugins.moveit_simple_controller_manager]: Added FollowJointTrajectory controller for /right/right_fr3_arm_controller
+[move_group-3] [INFO] [1787993491.219314215] [moveit.plugins.moveit_simple_controller_manager]: Max effort set to 0.0
+[move_group-3] [INFO] [1787993491.220312252] [moveit.plugins.moveit_simple_controller_manager]: Added GripperCommand controller for left_franka_gripper
+[move_group-3] [INFO] [1787993491.220325477] [moveit.plugins.moveit_simple_controller_manager]: Max effort set to 0.0
+[move_group-3] [INFO] [1787993491.221174508] [moveit.plugins.moveit_simple_controller_manager]: Added GripperCommand controller for right_franka_gripper
+[move_group-3] [INFO] [1787993491.221272637] [moveit.plugins.moveit_simple_controller_manager]: Returned 4 controllers in list
+[move_group-3] [INFO] [1787993491.221296643] [moveit.plugins.moveit_simple_controller_manager]: Returned 4 controllers in list
+[move_group-3] [INFO] [1787993491.221581560] [moveit_ros.trajectory_execution_manager]: Trajectory execution is managing controllers
+[move_group-3] [INFO] [1787993491.221588704] [move_group.move_group]: MoveGroup debug mode is ON
+[move_group-3] [INFO] [1787993491.231236505] [move_group.move_group]: 
+[move_group-3] 
+[move_group-3] ********************************************************
+[move_group-3] * MoveGroup using: 
+[move_group-3] *     - ApplyPlanningSceneService
+[move_group-3] *     - ClearOctomapService
+[move_group-3] *     - ExecuteTaskSolution
+[move_group-3] *     - CartesianPathService
+[move_group-3] *     - ExecuteTrajectoryAction
+[move_group-3] *     - GetPlanningSceneService
+[move_group-3] *     - KinematicsService
+[move_group-3] *     - MoveAction
+[move_group-3] *     - MotionPlanService
+[move_group-3] *     - QueryPlannersService
+[move_group-3] *     - StateValidationService
+[move_group-3] ********************************************************
+[move_group-3] 
+[move_group-3] [INFO] [1787993491.231273005] [moveit_move_group_capabilities_base.move_group_context]: MoveGroup context using planning plugin ompl_interface/OMPLPlanner
+[move_group-3] [INFO] [1787993491.231302111] [moveit_move_group_capabilities_base.move_group_context]: MoveGroup context initialization complete
+[move_group-3] Loading 'move_group/ApplyPlanningSceneService'...
+[move_group-3] Loading 'move_group/ClearOctomapService'...
+[move_group-3] Loading 'move_group/ExecuteTaskSolutionCapability'...
+[move_group-3] Loading 'move_group/MoveGroupCartesianPathService'...
+[move_group-3] Loading 'move_group/MoveGroupExecuteTrajectoryAction'...
+[move_group-3] Loading 'move_group/MoveGroupGetPlanningSceneService'...
+[move_group-3] Loading 'move_group/MoveGroupKinematicsService'...
+[move_group-3] Loading 'move_group/MoveGroupMoveAction'...
+[move_group-3] Loading 'move_group/MoveGroupPlanService'...
+[move_group-3] Loading 'move_group/MoveGroupQueryPlannersService'...
+[move_group-3] Loading 'move_group/MoveGroupStateValidationService'...
+[move_group-3] 
+[move_group-3] You can start planning now!
+[move_group-3] 
+[rviz2-6] [INFO] [1787993491.301446223] [rviz2]: Stereo is NOT SUPPORTED
+[rviz2-6] Warning: class_loader.impl: SEVERE WARNING!!! A namespace collision has occurred with plugin factory for class rviz_default_plugins::displays::InteractiveMarkerDisplay. New factory will OVERWRITE existing one. This situation occurs when libraries containing plugins are directly linked against an executable (the one running right now generating this message). Please separate plugins out into their own library or just don't link against the library and use either class_loader::ClassLoader/MultiLibraryClassLoader to open.
+[rviz2-6]          at line 253 in /opt/ros/humble/include/class_loader/class_loader/class_loader_core.hpp
+[python3-15] [WARN] [1787993491.524813746] [dual_fr3_trunking_readiness_gate]: left gripper Homing is starting; make sure the gripper is empty
+[franka_gripper_node-7] [INFO] [1787993491.576925712] [left_franka_gripper]: Received Homing request
+[franka_gripper_node-7] [INFO] [1787993491.577360257] [left_franka_gripper]: Gripper Homing...
+[ros2_control_node-4] [INFO] [1787993491.869667869] [left.controller_manager]: Loading controller 'left_franka_robot_state_broadcaster'
+[ros2_control_node-5] [INFO] [1787993491.871010298] [right.controller_manager]: Loading controller 'right_franka_robot_state_broadcaster'
+[spawner-13] [INFO] [1787993491.881826383] [left.spawner_left_franka_robot_state_broadcaster]: Loaded left_franka_robot_state_broadcaster
+[spawner-14] [INFO] [1787993491.882110038] [right.spawner_right_franka_robot_state_broadcaster]: Loaded right_franka_robot_state_broadcaster
+[ros2_control_node-4] [INFO] [1787993491.882444550] [left.controller_manager]: Configuring controller 'left_franka_robot_state_broadcaster'
+[ros2_control_node-5] [INFO] [1787993491.882733044] [right.controller_manager]: Configuring controller 'right_franka_robot_state_broadcaster'
+[spawner-14] [INFO] [1787993491.900558464] [right.spawner_right_franka_robot_state_broadcaster]: Configured and activated right_franka_robot_state_broadcaster
+[spawner-13] [INFO] [1787993491.901589995] [left.spawner_left_franka_robot_state_broadcaster]: Configured and activated left_franka_robot_state_broadcaster
+[INFO] [spawner-13]: process has finished cleanly [pid 3133755]
+[INFO] [spawner-14]: process has finished cleanly [pid 3133757]
+[rviz2-6] [ERROR] [1787993494.364217474] [moveit_ros_visualization.motion_planning_frame]: Action server: /recognize_objects not available
+[rviz2-6] [INFO] [1787993494.371205055] [moveit_ros_visualization.motion_planning_frame]: MoveGroup namespace changed: / -> . Reloading params.
+[rviz2-6] [INFO] [1787993494.428316465] [moveit_rdf_loader.rdf_loader]: Loaded robot model in 0.0114713 seconds
+[rviz2-6] [INFO] [1787993494.428347054] [moveit_robot_model.robot_model]: Loading robot model 'dual_fr3'...
+[rviz2-6] [INFO] [1787993494.428354077] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[rviz2-6] [INFO] [1787993494.603120629] [moveit_ros.planning_scene_monitor.planning_scene_monitor]: Starting planning scene monitor
+[rviz2-6] [INFO] [1787993494.603679843] [moveit_ros.planning_scene_monitor.planning_scene_monitor]: Listening to '/monitored_planning_scene'
+[rviz2-6] [INFO] [1787993495.008235307] [moveit_ros.planning_scene_monitor.planning_scene_monitor]: Starting planning scene monitor
+[rviz2-6] [INFO] [1787993495.008652548] [moveit_ros.planning_scene_monitor.planning_scene_monitor]: Listening to '/monitored_planning_scene'
+[rviz2-6] [INFO] [1787993495.017842398] [interactive_marker_display_94151559568256]: Connected on namespace: /rviz_moveit_motion_planning_display/robot_interaction_interactive_marker_topic
+[rviz2-6] [INFO] [1787993495.031245650] [moveit_ros_visualization.motion_planning_frame]: group dual_fr3_arms
+[rviz2-6] [INFO] [1787993495.031263554] [moveit_ros_visualization.motion_planning_frame]: Constructing new MoveGroup connection for group 'dual_fr3_arms' in namespace ''
+[rviz2-6] [INFO] [1787993495.035543083] [move_group_interface]: Ready to take commands for planning group dual_fr3_arms.
+[rviz2-6] [INFO] [1787993495.091534389] [interactive_marker_display_94151559568256]: Sending request for interactive markers
+[rviz2-6] [INFO] [1787993495.221570994] [interactive_marker_display_94151559568256]: Service response received for initialization
+[franka_gripper_node-7] [INFO] [1787993501.029652418] [left_franka_gripper]: Gripper Homing succeeded
+[python3-15] [INFO] [1787993501.030243052] [dual_fr3_trunking_readiness_gate]: left gripper Homing succeeded
+[python3-15] [WARN] [1787993501.030394934] [dual_fr3_trunking_readiness_gate]: right gripper Homing is starting; make sure the gripper is empty
+[franka_gripper_node-8] [INFO] [1787993501.038168130] [right_franka_gripper]: Received Homing request
+[franka_gripper_node-8] [INFO] [1787993501.038545375] [right_franka_gripper]: Gripper Homing...
+[franka_gripper_node-8] [INFO] [1787993507.822761111] [right_franka_gripper]: Gripper Homing succeeded
+[python3-15] [INFO] [1787993507.823213510] [dual_fr3_trunking_readiness_gate]: right gripper Homing succeeded
+[python3-15] [INFO] [1787993507.823698100] [dual_fr3_trunking_readiness_gate]: Readiness checks passed; MTC may now start safely
+[INFO] [python3-15]: process has finished cleanly [pid 3133759]
+[INFO] [python3-16]: process started with pid [3134466]
+[python3-16] [INFO] [1787993508.331875159] [moveit_rdf_loader.rdf_loader]: Loaded robot model in 0.015485 seconds
+[python3-16] [INFO] [1787993508.331905878] [moveit_robot_model.robot_model]: Loading robot model 'dual_fr3'...
+[python3-16] [INFO] [1787993508.331911168] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[python3-16] [mtc_prototype] loaded 4 keypoints, 3 segments, 4 task steps, 10 MTC stages
+[python3-16] [mtc_prototype] MTC stage sequence:
+[python3-16] 0: stage_key=initial:follower:current->corner_1:close_gripper_at_start, task_step=-1, action=initialize, actor=follower, primitive=close_gripper_at_start, type=MoveTo, group=right_fr3_hand, ik_frame=right_fr3_hand_tcp, current->corner_1, frame=left_fr3_link0, vector=(0.0, 0.0, 0.0), yaw_delta=0.000, target_yaw=0.000, executable=True, order=follower_close_gripper, info=close gripper before any arm motion
+[python3-16] 1: stage_key=initial:leader:current->corner_2:close_gripper_at_start, task_step=-1, action=initialize, actor=leader, primitive=close_gripper_at_start, type=MoveTo, group=left_fr3_hand, ik_frame=left_fr3_hand_tcp, current->corner_2, frame=left_fr3_link0, vector=(0.0, 0.0, 0.0), yaw_delta=0.000, target_yaw=0.000, executable=True, order=leader_close_gripper, info=close gripper before any arm motion
+[python3-16] 2: stage_key=initial:follower:current->corner_1:move_to_initial_keypoint, task_step=-1, action=initialize, actor=follower, primitive=move_to_initial_keypoint, type=MoveTo, group=right_fr3_arm, ik_frame=right_fr3_hand_tcp, current->corner_1, frame=left_fr3_link0, vector=(0.0, 0.0, 0.0), yaw_delta=0.000, target_yaw=-1.571, executable=True, order=follower_move_to_initial_keypoint, info=direct joint-space plan from current robot state to the initial trunking keypoint using the task tool orientation and path yaw
+[python3-16] 3: stage_key=initial:leader:current->corner_2:move_to_initial_keypoint, task_step=-1, action=initialize, actor=leader, primitive=move_to_initial_keypoint, type=MoveTo, group=left_fr3_arm, ik_frame=left_fr3_hand_tcp, current->corner_2, frame=left_fr3_link0, vector=(0.0, 0.0, 0.0), yaw_delta=0.000, target_yaw=3.142, executable=True, order=leader_move_to_initial_keypoint, info=direct joint-space plan from current robot state to the initial trunking keypoint using the task tool orientation and path yaw
+[python3-16] 4: stage_key=step_0:move_anchor:leader:corner_2->entry_5:direct_move_to_next_anchor, task_step=0, action=move_anchor, actor=leader, primitive=direct_move_to_next_anchor, type=MoveTo, group=left_fr3_arm, ik_frame=left_fr3_hand_tcp, corner_2->entry_5, frame=left_fr3_link0, vector=(-0.24, -0.203, 0.0), yaw_delta=0.000, target_yaw=-1.571, executable=True, order=follower_hold_position -> leader_move_to_anchor -> leader_establish_tension, info=leader directly plans to the next anchor pose with gripper closed and faces along the cable path
+[python3-16] 5: stage_key=step_1:straighten:follower:corner_1->corner_2:turn_gripper_to_next_keypoint, task_step=1, action=straighten, actor=follower, primitive=turn_gripper_to_next_keypoint, type=MoveTo, group=right_fr3_arm, ik_frame=right_fr3_hand_tcp, corner_1->corner_2, frame=left_fr3_link0, vector=(0.0, -0.6, 0.0), yaw_delta=0.000, target_yaw=-1.571, executable=False, order=leader_hold_anchor -> follower_follow_segment_path, info=gripper is already aligned with the next keypoint
+[python3-16] 6: stage_key=step_1:straighten:follower:corner_1->corner_2:cartesian_move_to_next_keypoint, task_step=1, action=straighten, actor=follower, primitive=cartesian_move_to_next_keypoint, type=MoveRelative, group=right_fr3_arm, ik_frame=right_fr3_hand_tcp, corner_1->corner_2, frame=left_fr3_link0, vector=(0.0, -0.6, 0.0), yaw_delta=0.000, target_yaw=0.000, executable=True, order=leader_hold_anchor -> follower_follow_segment_path, info=cartesian move to next keypoint with gripper closed
+[python3-16] 7: stage_key=step_2:straighten:follower:corner_2->corner_4:turn_gripper_to_next_keypoint, task_step=2, action=straighten, actor=follower, primitive=turn_gripper_to_next_keypoint, type=MoveTo, group=right_fr3_arm, ik_frame=right_fr3_hand_tcp, corner_2->corner_4, frame=left_fr3_link0, vector=(-0.24, 0.0, 0.0), yaw_delta=-1.571, target_yaw=3.142, executable=True, order=leader_hold_anchor -> follower_follow_segment_path, info=rotate gripper in place with zero TCP translation to face the next keypoint before moving
+[python3-16] 8: stage_key=step_2:straighten:follower:corner_2->corner_4:cartesian_move_to_next_keypoint, task_step=2, action=straighten, actor=follower, primitive=cartesian_move_to_next_keypoint, type=MoveRelative, group=right_fr3_arm, ik_frame=right_fr3_hand_tcp, corner_2->corner_4, frame=left_fr3_link0, vector=(-0.24, 0.0, 0.0), yaw_delta=0.000, target_yaw=0.000, executable=True, order=leader_hold_anchor -> follower_follow_segment_path, info=cartesian move to next keypoint with gripper closed
+[python3-16] 9: stage_key=step_3:seat_edge:follower:corner_4->entry_5:seat_cable_on_edge, task_step=3, action=seat_edge, actor=follower, primitive=seat_cable_on_edge, type=InfoOnly, group=right_fr3_arm, ik_frame=right_fr3_hand_tcp, corner_4->entry_5, frame=left_fr3_link0, vector=(0.0, -0.203, 0.0), yaw_delta=0.000, target_yaw=0.000, executable=False, order=follower_seat_cable_on_edge, info=placeholder for the physical cable-seating action; no arm motion is issued
+[python3-16] [WARN] [1787993509.387809057] [moveit_trajectory_processing.time_optimal_trajectory_generation]: Joint acceleration limits are not defined. Using the default 1 rad/s^2. You can define acceleration limits in the URDF or joint_limits.yaml.
+[python3-16] [mtc_prototype] whole-chain planning failed; trying staged execution from fresh robot states
+[python3-16] [mtc_prototype] executing 8 MTC stages with real-state replan between stages
+[python3-16] [mtc_prototype] planning stage 1/8: [00] initial_follower_close_gripper
+[python3-16] [INFO] [1787993509.394048176] [moveit_rdf_loader.rdf_loader]: Loaded robot model in 0.00229767 seconds
+[python3-16] [INFO] [1787993509.394063615] [moveit_robot_model.robot_model]: Loading robot model 'dual_fr3'...
+[python3-16] [INFO] [1787993509.394066791] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[move_group-3] [WARN] [1787993509.562826624] [moveit_task_constructor_visualization.execute_task_solution]: The trajectory of stage '3' from task '' does not have any controllers specified for trajectory execution. This might lead to unexpected controller selection.
+[move_group-3] [INFO] [1787993509.562865048] [moveit_task_constructor_visualization.execute_task_solution]: Executing TaskSolution
+[move_group-3] [INFO] [1787993509.562919573] [moveit.plugins.moveit_simple_controller_manager]: Returned 4 controllers in list
+[move_group-3] [INFO] [1787993509.562934321] [moveit.plugins.moveit_simple_controller_manager]: Returned 4 controllers in list
+[move_group-3] [INFO] [1787993509.562989807] [moveit_ros.trajectory_execution_manager]: Validating trajectory with allowed_start_tolerance 0.01
+[move_group-3] [INFO] [1787993509.578567324] [moveit_ros.trajectory_execution_manager]: Starting trajectory execution ...
+[move_group-3] [INFO] [1787993509.578623151] [moveit.plugins.moveit_simple_controller_manager]: Returned 4 controllers in list
+[move_group-3] [INFO] [1787993509.578647278] [moveit.plugins.moveit_simple_controller_manager]: Returned 4 controllers in list
+[move_group-3] [INFO] [1787993509.578988232] [moveit.plugins.moveit_simple_controller_manager]: Returned 4 controllers in list
+[move_group-3] [INFO] [1787993509.578994494] [moveit.plugins.moveit_simple_controller_manager]: Returned 4 controllers in list
+[franka_gripper_node-8] [INFO] [1787993509.694956273] [right_franka_gripper]: Received GripperCommand request
+[franka_gripper_node-8] [INFO] [1787993509.695355049] [right_franka_gripper]: Gripper GripperCommand...
+[franka_gripper_node-8] [INFO] [1787993511.535015051] [right_franka_gripper]: Gripper GripperCommand succeeded
+[move_group-3] [INFO] [1787993511.611758187] [moveit_ros.trajectory_execution_manager]: Completed trajectory execution with status SUCCEEDED ...
+[python3-16] [mtc_prototype] stage [00] completed
+[python3-16] [mtc_prototype] planning stage 2/8: [01] initial_leader_close_gripper
+[python3-16] [INFO] [1787993511.643861909] [moveit_rdf_loader.rdf_loader]: Loaded robot model in 0.00220861 seconds
+[python3-16] [INFO] [1787993511.643883160] [moveit_robot_model.robot_model]: Loading robot model 'dual_fr3'...
+[python3-16] [INFO] [1787993511.643886627] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[python3-16] [mtc_prototype] planning failed for stage [01] initial_leader_close_gripper; halting all later stages
+[python3-16]   0  - ←   0 →   -  0 / dual_fr3_trunking_mtc_prototype
+[python3-16]     1  - ←   1 →   -  0 / current_state
+[python3-16]     -  0 →   1 →   -  0 / initial_follower_close_gripper
+[python3-16]     -  0 →   0 →   -  0 / initial_leader_close_gripper
+[python3-16]     -  0 →   0 →   -  0 / initial_follower_move_to_corner_1
+[python3-16]     -  0 →   0 →   -  0 / initial_leader_move_to_corner_2
+[python3-16]     -  0 →   0 →   -  0 / step_0_move_anchor_leader_plan_to_entry_5
+[python3-16]     -  0 →   0 →   -  0 / step_1_straighten_follower_cartesian_corner_1_to_corner_2
+[python3-16]     -  0 →   0 →   -  0 / step_2_straighten_follower_turn_to_corner_4
+[python3-16]     -  0 →   0 →   -  0 / step_2_straighten_follower_cartesian_corner_2_to_corner_4
+[python3-16] Failing stage(s):
+[python3-16] initial_leader_close_gripper (0/1): Start state is out of bounds!
+[python3-16]   0  - ←   0 →   -  0 / dual_fr3_trunking_mtc_prototype
+[python3-16]     1  - ←   1 →   -  0 / current_state
+[python3-16]     -  0 →   0 →   -  0 / initial_leader_close_gripper
+[python3-16] Failing stage(s):
+[python3-16] initial_leader_close_gripper (0/1): Start state is out of bounds!
+[ERROR] [python3-16]: process has died [pid 3134466, exit code 3, cmd '/usr/bin/python3 /home/jhr/ws_franka/install/dual_fr3_trunking_mtc/lib/dual_fr3_trunking_mtc/trunking_mtc_prototype.py --keypoints-file /home/jhr/ws_franka/install/dual_fr3_trunking_mtc/share/dual_fr3_trunking_mtc/config/keypoints.yaml --task-frame left_fr3_link0 --initial-leader-index 1 --initial-follower-index 0 --leader-group left_fr3_arm --follower-group right_fr3_arm --leader-ik-frame left_fr3_hand_tcp --follower-ik-frame right_fr3_hand_tcp --motion-velocity-scaling 0.2 --motion-acceleration-scaling 0.2 --leader-lead-distance 0.10 --tool-roll 3.141592653589793 --tool-pitch 0.0 --align-initial-poses true --plan true --execute true --execute-stage-by-stage true --keep-alive-sec 30.0 --ros-args --params-file /tmp/launch_params_696u1pqy --params-file /tmp/launch_params_2xh28xtm --params-file /tmp/launch_params_sn0fe60u --params-file /tmp/launch_params_797jii7i'].
+
+

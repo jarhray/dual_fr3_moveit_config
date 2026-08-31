@@ -445,6 +445,13 @@ ros2 launch dual_fr3_moveit_config demo.launch.py \
   right_robot_ip:=<right_fr3_ip>
 ```
 
+```bash
+ros2 launch dual_fr3_moveit_config demo.launch.py \
+  use_fake_hardware:=false \
+  left_robot_ip:=192.168.1.2 \
+  right_robot_ip:=192.168.2.2
+```
+
 真实硬件路径中，URDF 里有两个独立的
 `franka_hardware/FrankaHardwareInterface` 实例：
 

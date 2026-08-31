@@ -1,10 +1,10 @@
 controller_names:
-  - left_fr3_arm_controller
-  - right_fr3_arm_controller
+  - /left/left_fr3_arm_controller
+  - /right/right_fr3_arm_controller
   - left_franka_gripper
   - right_franka_gripper
 
-left_fr3_arm_controller:
+/left/left_fr3_arm_controller:
   action_ns: follow_joint_trajectory
   type: FollowJointTrajectory
   default: true
@@ -17,7 +17,7 @@ left_fr3_arm_controller:
     - left_fr3_joint6
     - left_fr3_joint7
 
-right_fr3_arm_controller:
+/right/right_fr3_arm_controller:
   action_ns: follow_joint_trajectory
   type: FollowJointTrajectory
   default: true

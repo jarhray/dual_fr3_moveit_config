@@ -2,13 +2,15 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="dual_fr3">
 
   <xacro:include filename="$(find franka_description)/robots/common/franka_robot.xacro"/>
-  <xacro:include filename="$(find franka_hardware)/ros2_control/franka_arm.ros2_control.xacro"/>
+  <xacro:include filename="$(find franka_description)/robots/common/franka_arm.ros2_control.xacro"/>
   <xacro:include filename="$(find dual_fr3_moveit_config)/config/research_franka_hand.xacro"/>
 
   <xacro:arg name="use_fake_hardware" default="true"/>
   <xacro:arg name="fake_sensor_commands" default="false"/>
   <xacro:arg name="left_robot_ip" default=""/>
   <xacro:arg name="right_robot_ip" default=""/>
+  <xacro:arg name="load_left_ros2_control" default="true"/>
+  <xacro:arg name="load_right_ros2_control" default="true"/>
   <xacro:arg name="load_gripper" default="true"/>
   <xacro:arg name="ee_id" default="franka_hand"/>
   <xacro:arg name="arm_yaw" default="0"/>
@@ -103,6 +105,11 @@
 
   <xacro:franka_robot
       robot_type="fr3"
+      joint_limits="${xacro.load_yaml('$(find franka_description)/robots/fr3/joint_limits.yaml')}"
+      kinematics="${xacro.load_yaml('$(find franka_description)/robots/fr3/kinematics.yaml')}"
+      accelerometer_config="${xacro.load_yaml('$(find franka_description)/robots/fr3/accelerometers.yaml')}"
+      inertials="${xacro.load_yaml('$(find franka_description)/robots/fr3/inertials.yaml')}"
+      dynamics="${xacro.load_yaml('$(find franka_description)/robots/fr3/dynamics.yaml')}"
       parent="world"
       hand="false"
       ee_id="$(arg ee_id)"
@@ -118,6 +125,11 @@
 
   <xacro:franka_robot
       robot_type="fr3"
+      joint_limits="${xacro.load_yaml('$(find franka_description)/robots/fr3/joint_limits.yaml')}"
+      kinematics="${xacro.load_yaml('$(find franka_description)/robots/fr3/kinematics.yaml')}"
+      accelerometer_config="${xacro.load_yaml('$(find franka_description)/robots/fr3/accelerometers.yaml')}"
+      inertials="${xacro.load_yaml('$(find franka_description)/robots/fr3/inertials.yaml')}"
+      dynamics="${xacro.load_yaml('$(find franka_description)/robots/fr3/dynamics.yaml')}"
       parent="world"
       hand="false"
       ee_id="$(arg ee_id)"
@@ -149,41 +161,21 @@
         tcp_rpy="0 0 0"/>
   </xacro:if>
 
-  <xacro:franka_arm_ros2_control
-      robot_type="fr3"
-      include_effort_command="true"
-      include_finger_joint="false"
-      arm_prefix="left_">
-    <hardware_plugin>
-      <xacro:if value="$(arg use_fake_hardware)">
-        <plugin>mock_components/GenericSystem</plugin>
-        <param name="mock_sensor_commands">$(arg fake_sensor_commands)</param>
-        <param name="state_following_offset">0.0</param>
-      </xacro:if>
-      <xacro:unless value="$(arg use_fake_hardware)">
-        <plugin>franka_hardware/FrankaHardwareInterface</plugin>
-        <param name="robot_ip">$(arg left_robot_ip)</param>
-        <param name="arm_prefix">left_</param>
-      </xacro:unless>
-    </hardware_plugin>
-  </xacro:franka_arm_ros2_control>
+  <xacro:if value="$(arg load_left_ros2_control)">
+    <xacro:franka_arm_ros2_control
+        robot_type="fr3"
+        robot_ip="$(arg left_robot_ip)"
+        use_fake_hardware="$(arg use_fake_hardware)"
+        fake_sensor_commands="$(arg fake_sensor_commands)"
+        arm_prefix="left_"/>
+  </xacro:if>
 
-  <xacro:franka_arm_ros2_control
-      robot_type="fr3"
-      include_effort_command="true"
-      include_finger_joint="false"
-      arm_prefix="right_">
-    <hardware_plugin>
-      <xacro:if value="$(arg use_fake_hardware)">
-        <plugin>mock_components/GenericSystem</plugin>
-        <param name="mock_sensor_commands">$(arg fake_sensor_commands)</param>
-        <param name="state_following_offset">0.0</param>
-      </xacro:if>
-      <xacro:unless value="$(arg use_fake_hardware)">
-        <plugin>franka_hardware/FrankaHardwareInterface</plugin>
-        <param name="robot_ip">$(arg right_robot_ip)</param>
-        <param name="arm_prefix">right_</param>
-      </xacro:unless>
-    </hardware_plugin>
-  </xacro:franka_arm_ros2_control>
+  <xacro:if value="$(arg load_right_ros2_control)">
+    <xacro:franka_arm_ros2_control
+        robot_type="fr3"
+        robot_ip="$(arg right_robot_ip)"
+        use_fake_hardware="$(arg use_fake_hardware)"
+        fake_sensor_commands="$(arg fake_sensor_commands)"
+        arm_prefix="right_"/>
+  </xacro:if>
 </robot>
