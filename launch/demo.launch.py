@@ -2,9 +2,15 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, Shutdown
 from launch.conditions import IfCondition, UnlessCondition
-from launch.substitutions import Command, FindExecutable, LaunchConfiguration
+from launch.substitutions import (
+    AndSubstitution,
+    Command,
+    FindExecutable,
+    LaunchConfiguration,
+    NotSubstitution,
+)
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 import yaml
@@ -35,6 +41,7 @@ def generate_launch_description():
     left_robot_ip = LaunchConfiguration("left_robot_ip")
     right_robot_ip = LaunchConfiguration("right_robot_ip")
     load_gripper = LaunchConfiguration("load_gripper")
+    start_gripper = LaunchConfiguration("start_gripper")
     ee_id = LaunchConfiguration("ee_id")
     use_rviz = LaunchConfiguration("use_rviz")
     capabilities = LaunchConfiguration("capabilities")
@@ -49,27 +56,44 @@ def generate_launch_description():
     urdf_xacro = os.path.join(package_share, "config", "dual_fr3.urdf.xacro")
     srdf_xacro = os.path.join(package_share, "config", "dual_fr3.srdf.xacro")
 
-    robot_description_config = Command(
-        [
-            FindExecutable(name="xacro"),
-            " ",
-            urdf_xacro,
-            " use_fake_hardware:=",
-            use_fake_hardware,
-            " fake_sensor_commands:=",
-            fake_sensor_commands,
-            " left_robot_ip:=",
-            left_robot_ip,
-            " right_robot_ip:=",
-            right_robot_ip,
-            " load_gripper:=",
-            load_gripper,
-            " ee_id:=",
-            ee_id,
-        ]
-    )
+    def robot_description_command(load_left_control, load_right_control):
+        return Command(
+            [
+                FindExecutable(name="xacro"),
+                " ",
+                urdf_xacro,
+                " use_fake_hardware:=",
+                use_fake_hardware,
+                " fake_sensor_commands:=",
+                fake_sensor_commands,
+                " left_robot_ip:=",
+                left_robot_ip,
+                " right_robot_ip:=",
+                right_robot_ip,
+                " load_left_ros2_control:=",
+                load_left_control,
+                " load_right_ros2_control:=",
+                load_right_control,
+                " load_gripper:=",
+                load_gripper,
+                " ee_id:=",
+                ee_id,
+            ]
+        )
+
+    robot_description_config = robot_description_command("true", "true")
     robot_description = {
         "robot_description": ParameterValue(robot_description_config, value_type=str)
+    }
+    left_hardware_description = {
+        "robot_description": ParameterValue(
+            robot_description_command("true", "false"), value_type=str
+        )
+    }
+    right_hardware_description = {
+        "robot_description": ParameterValue(
+            robot_description_command("false", "true"), value_type=str
+        )
     }
 
     robot_description_semantic_config = Command(
@@ -162,11 +186,13 @@ def generate_launch_description():
             robot_description,
             {
                 "source_list": [
-                    "franka/joint_states",
+                    "/left/franka/joint_states",
+                    "/right/franka/joint_states",
                     "left_franka_gripper/joint_states",
                     "right_franka_gripper/joint_states",
                 ],
                 "rate": 30,
+                "use_robot_description": False,
             },
         ],
     )
@@ -174,28 +200,41 @@ def generate_launch_description():
     ros2_controllers_path = os.path.join(
         package_share, "config", "ros2_controllers.yaml"
     )
-    ros2_control_node = Node(
+    left_ros2_control_node = Node(
         package="controller_manager",
         executable="ros2_control_node",
-        parameters=[robot_description, ros2_controllers_path],
+        namespace="left",
+        parameters=[left_hardware_description, ros2_controllers_path],
         remappings=[("joint_states", "franka/joint_states")],
         output="both",
+        on_exit=Shutdown(reason="Left controller manager exited."),
+    )
+    right_ros2_control_node = Node(
+        package="controller_manager",
+        executable="ros2_control_node",
+        namespace="right",
+        parameters=[right_hardware_description, ros2_controllers_path],
+        remappings=[("joint_states", "franka/joint_states")],
+        output="both",
+        on_exit=Shutdown(reason="Right controller manager exited."),
     )
 
     load_controllers = []
-    for controller in [
-        "joint_state_broadcaster",
-        "left_fr3_arm_controller",
-        "right_fr3_arm_controller",
+    for namespace, controller in [
+        ("left", "joint_state_broadcaster"),
+        ("left", "left_fr3_arm_controller"),
+        ("right", "joint_state_broadcaster"),
+        ("right", "right_fr3_arm_controller"),
     ]:
         load_controllers.append(
             Node(
                 package="controller_manager",
                 executable="spawner",
+                namespace=namespace,
                 arguments=[
                     controller,
                     "--controller-manager",
-                    "/controller_manager",
+                    f"/{namespace}/controller_manager",
                     "--controller-manager-timeout",
                     "60",
                 ],
@@ -204,18 +243,19 @@ def generate_launch_description():
         )
 
     franka_state_broadcasters = []
-    for controller in [
-        "left_franka_robot_state_broadcaster",
-        "right_franka_robot_state_broadcaster",
+    for namespace, controller in [
+        ("left", "left_franka_robot_state_broadcaster"),
+        ("right", "right_franka_robot_state_broadcaster"),
     ]:
         franka_state_broadcasters.append(
             Node(
                 package="controller_manager",
                 executable="spawner",
+                namespace=namespace,
                 arguments=[
                     controller,
                     "--controller-manager",
-                    "/controller_manager",
+                    f"/{namespace}/controller_manager",
                     "--controller-manager-timeout",
                     "60",
                 ],
@@ -239,7 +279,9 @@ def generate_launch_description():
             },
             gripper_config,
         ],
-        condition=UnlessCondition(use_fake_hardware),
+        condition=IfCondition(
+            AndSubstitution(start_gripper, NotSubstitution(use_fake_hardware))
+        ),
     )
 
     right_gripper = Node(
@@ -257,7 +299,9 @@ def generate_launch_description():
             },
             gripper_config,
         ],
-        condition=UnlessCondition(use_fake_hardware),
+        condition=IfCondition(
+            AndSubstitution(start_gripper, NotSubstitution(use_fake_hardware))
+        ),
     )
 
     left_fake_gripper = Node(
@@ -275,7 +319,7 @@ def generate_launch_description():
             },
             gripper_config,
         ],
-        condition=IfCondition(use_fake_hardware),
+        condition=IfCondition(AndSubstitution(start_gripper, use_fake_hardware)),
     )
 
     right_fake_gripper = Node(
@@ -293,7 +337,7 @@ def generate_launch_description():
             },
             gripper_config,
         ],
-        condition=IfCondition(use_fake_hardware),
+        condition=IfCondition(AndSubstitution(start_gripper, use_fake_hardware)),
     )
 
     rviz_node = Node(
@@ -339,7 +383,12 @@ def generate_launch_description():
                 description="Load Franka hand geometry.",
             ),
             DeclareLaunchArgument(
-            "ee_id",
+                "start_gripper",
+                default_value="true",
+                description="Start the Franka gripper drivers/action servers.",
+            ),
+            DeclareLaunchArgument(
+                "ee_id",
                 default_value="franka_hand",
                 description="End-effector id.",
             ),
@@ -371,7 +420,8 @@ def generate_launch_description():
             robot_state_publisher,
             joint_state_publisher,
             move_group_node,
-            ros2_control_node,
+            left_ros2_control_node,
+            right_ros2_control_node,
             rviz_node,
             left_gripper,
             right_gripper,
