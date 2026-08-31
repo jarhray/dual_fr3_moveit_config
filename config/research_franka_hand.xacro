@@ -7,7 +7,7 @@
                params="connected_to prefix ee_inertials
                        rpy_ee:='0 0 0'
                        xyz_ee:='0 0 0'
-                       tcp_xyz:='0 0 0.1034'
+                       tcp_xyz:='0 0 0.1524'
                        tcp_rpy:='0 0 0'">
     <joint name="${prefix}hand_joint" type="fixed">
       <parent link="${connected_to}"/>
@@ -47,9 +47,9 @@
         </material>
       </visual>
       <collision name="${prefix}leftfinger_collision">
-        <origin xyz="0 0.0135 0.05545" rpy="0 0 0"/>
+        <origin xyz="0 0 0.0964" rpy="0 0 0"/>
         <geometry>
-          <box size="0.021 0.029 0.106"/>
+          <mesh filename="package://dual_fr3_moveit_config/meshes/research_finger/finger.STL"/>
         </geometry>
       </collision>
       <xacro:ee-inertials name="leftfinger"/>
@@ -66,9 +66,9 @@
         </material>
       </visual>
       <collision name="${prefix}rightfinger_collision">
-        <origin xyz="0 0.0135 0.05545" rpy="0 0 0"/>
+        <origin xyz="0 0 0.0964" rpy="0 0 0"/>
         <geometry>
-          <box size="0.021 0.029 0.106"/>
+          <mesh filename="package://dual_fr3_moveit_config/meshes/research_finger/finger.STL"/>
         </geometry>
       </collision>
       <xacro:ee-inertials name="rightfinger"/>

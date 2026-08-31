@@ -137,7 +137,7 @@
         prefix="left_fr3_"
         ee_inertials="${xacro.load_yaml('$(find franka_description)/end_effectors/franka_hand/inertials.yaml')}"
         rpy_ee="0 0 ${-pi/4}"
-        tcp_xyz="0 0 0.1034"
+        tcp_xyz="0 0 0.1524"
         tcp_rpy="0 0 0"/>
 
     <xacro:research_franka_hand
@@ -145,7 +145,7 @@
         prefix="right_fr3_"
         ee_inertials="${xacro.load_yaml('$(find franka_description)/end_effectors/franka_hand/inertials.yaml')}"
         rpy_ee="0 0 ${-pi/4}"
-        tcp_xyz="0 0 0.1034"
+        tcp_xyz="0 0 0.1524"
         tcp_rpy="0 0 0"/>
   </xacro:if>
 
