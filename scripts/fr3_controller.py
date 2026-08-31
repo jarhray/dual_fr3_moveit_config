@@ -114,6 +114,8 @@ class DualFR3Controller(Node):
         self.gripper_grasp_clients = {}
         self.gripper_homing_clients = {}
         self.gripper_command_clients = {}
+        self.gazebo_gripper_command_clients = {}
+        self.active_gripper_command_clients = {}
         for arm, cfg in self.ARM_CONFIGS.items():
             self.gripper_move_clients[arm] = ActionClient(
                 self, Move, f"/{cfg.gripper_node}/move", callback_group=self.callback_group
@@ -128,6 +130,12 @@ class DualFR3Controller(Node):
                 self,
                 GripperCommand,
                 f"/{cfg.gripper_node}/gripper_action",
+                callback_group=self.callback_group,
+            )
+            self.gazebo_gripper_command_clients[arm] = ActionClient(
+                self,
+                GripperCommand,
+                f"/{cfg.gripper_node}/gripper_cmd",
                 callback_group=self.callback_group,
             )
             self.create_subscription(
@@ -167,13 +175,50 @@ class DualFR3Controller(Node):
                 real_count += 1
             if self.gripper_homing_clients[arm].wait_for_server(timeout_sec=0.5):
                 real_count += 1
-            command_ok = self.gripper_command_clients[arm].wait_for_server(timeout_sec=0.5)
+            real_command_ok = self.gripper_command_clients[arm].wait_for_server(
+                timeout_sec=0.5
+            )
+            gazebo_command_ok = self.gazebo_gripper_command_clients[
+                arm
+            ].wait_for_server(timeout_sec=0.5)
+            if real_command_ok:
+                self.active_gripper_command_clients[arm] = (
+                    self.gripper_command_clients[arm]
+                )
+            elif gazebo_command_ok:
+                self.active_gripper_command_clients[arm] = (
+                    self.gazebo_gripper_command_clients[arm]
+                )
             if real_count:
                 self.get_logger().info(f"{arm} gripper real action servers connected")
-            elif command_ok:
-                self.get_logger().info(f"{arm} gripper command action server connected")
+            elif real_command_ok:
+                self.get_logger().info(
+                    f"{arm} gripper command action server connected"
+                )
+            elif gazebo_command_ok:
+                self.get_logger().info(
+                    f"{arm} Gazebo gripper controller connected"
+                )
             else:
                 self.get_logger().warn(f"{arm} gripper action servers are not available")
+
+    def _send_gripper_command_goal(self, arm: str, goal) -> bool:
+        client = self.active_gripper_command_clients.get(arm)
+        if client is not None and self._send_action_goal(client, goal, timeout=2.0):
+            return True
+
+        # Servers may have appeared after initialization. Keep the real-hardware
+        # endpoint first so this fallback cannot change established real behavior.
+        for candidate in (
+            self.gripper_command_clients[arm],
+            self.gazebo_gripper_command_clients[arm],
+        ):
+            if candidate is client:
+                continue
+            if self._send_action_goal(candidate, goal, timeout=0.5):
+                self.active_gripper_command_clients[arm] = candidate
+                return True
+        return False
 
     def _wait_for_joint_state(self, timeout: float = 10.0) -> bool:
         start = time.time()
@@ -447,7 +492,7 @@ class DualFR3Controller(Node):
         command_goal = GripperCommand.Goal()
         command_goal.command.position = width / 2.0
         command_goal.command.max_effort = 20.0
-        return self._send_action_goal(self.gripper_command_clients[arm], command_goal, timeout=2.0)
+        return self._send_gripper_command_goal(arm, command_goal)
 
     def close_gripper(self, arm: str, width: float = 0.0, speed: float = 0.08) -> bool:
         return self.open_gripper(arm, width=width, speed=speed)
@@ -478,7 +523,7 @@ class DualFR3Controller(Node):
         command_goal = GripperCommand.Goal()
         command_goal.command.position = float(np.clip(width / 2.0, 0.0, 0.04))
         command_goal.command.max_effort = force
-        return self._send_action_goal(self.gripper_command_clients[arm], command_goal, timeout=2.0)
+        return self._send_gripper_command_goal(arm, command_goal)
 
     def get_gripper_state(self, arm: str) -> dict:
         self._arm(arm)

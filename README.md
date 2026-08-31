@@ -37,7 +37,9 @@ dual_fr3_moveit_config/
     dual_fr3.urdf.xacro       # 双臂 FR3、双夹爪和工作台模型
     dual_fr3.srdf.xacro       # MoveIt 规划组、末端执行器和碰撞矩阵
     kinematics.yaml           # 左右臂运动学求解器
-    moveit_controllers.yaml   # MoveIt controller manager 映射
+    moveit_controllers.yaml   # 真机/双 controller manager 的 MoveIt 映射
+    moveit_controllers_gazebo.yaml
+                              # Gazebo/单 controller manager 的 MoveIt 映射
     ompl_planning.yaml        # OMPL 规划配置
     ros2_controllers.yaml     # ros2_control 控制器配置
   launch/
@@ -374,7 +376,8 @@ Gazebo 模式启动内容：
 - `left_fr3_arm_controller`
 - `right_fr3_arm_controller`
 - 一个共享 `move_group`
-- 左右 fake gripper action server
+- `left_franka_gripper`
+- `right_franka_gripper`
 - RViz，除非设置 `use_rviz:=false`
 
 Gazebo 启动默认启用 `use_sim_time`，因此 MoveIt 的轨迹超时按照仿真时钟计算；这对
@@ -387,6 +390,7 @@ Gazebo 使用的主要配置文件：
 
 - `config/dual_fr3.gazebo.urdf.xacro`
 - `config/gazebo_ros2_controllers.yaml`
+- `config/moveit_controllers_gazebo.yaml`
 - `launch/gazebo.launch.py`
 
 当前 Gazebo 配置默认使用原生 `gz_ros2_control/GazeboSimSystem` 和 position
@@ -403,11 +407,13 @@ MoveIt trajectory controller 仍使用 position 接口。
 不要把高面数 visual STL 直接用作 Gazebo collision，否则物理更新频率会从
 250 Hz 降到个位数，表现为控制器接收轨迹但机械臂几乎不动。
 
-控制器名称仍然保持为：
+仿真控制器名称为：
 
 ```text
 left_fr3_arm_controller
 right_fr3_arm_controller
+left_franka_gripper
+right_franka_gripper
 ```
 
 因此现有 Python 控制脚本可以继续通过 MoveIt 控制仿真双臂：
@@ -417,10 +423,17 @@ python3 src/dual_fr3_moveit_config/scripts/fr3_controller.py
 python3 src/dual_fr3_moveit_config/scripts/fr3_controller_lin.py
 ```
 
-Gazebo 模式下的夹爪目前使用 fake gripper action server，用于保证 MoveIt 和
-Python 接口中的夹爪 action 可用。它还不是 Gazebo 物理 finger joint controller。
-也就是说，夹爪命令会更新 ROS/MoveIt 侧的夹爪状态，但暂时不驱动 Gazebo 中的
-手指关节物理运动。
+Gazebo 模式下两侧 `position_controllers/GripperActionController` 直接控制
+`finger_joint1`，另一个 finger joint 通过 URDF mimic 关系同步。夹爪 action 为：
+
+```text
+/left_franka_gripper/gripper_cmd
+/right_franka_gripper/gripper_cmd
+```
+
+真机仍使用 `/left_franka_gripper/gripper_action` 和
+`/right_franka_gripper/gripper_action`；两种后端由各自的 MoveIt controller YAML
+明确分流。
 
 ## Launch 参数
 
@@ -560,17 +573,17 @@ ros2 launch dual_fr3_moveit_config demo.launch.py --show-args
 ros2 launch dual_fr3_moveit_config gazebo.launch.py --show-args
 ```
 
-检查两个夹爪 action 是否存在：
+检查 Gazebo 的两个夹爪 action 是否存在：
 
 ```bash
-ros2 action list | grep gripper_action
+ros2 action list | grep gripper_cmd
 ```
 
 期望看到：
 
 ```text
-/left_franka_gripper/gripper_action
-/right_franka_gripper/gripper_action
+/left_franka_gripper/gripper_cmd
+/right_franka_gripper/gripper_cmd
 ```
 
 检查夹爪 joint states 是否合并进 `/joint_states`：
@@ -591,7 +604,7 @@ right_fr3_finger_joint2
 直接测试左夹爪：
 
 ```bash
-ros2 action send_goal /left_franka_gripper/gripper_action \
+ros2 action send_goal /left_franka_gripper/gripper_cmd \
   control_msgs/action/GripperCommand \
   "{command: {position: 0.02, max_effort: 20.0}}"
 ```
@@ -599,7 +612,7 @@ ros2 action send_goal /left_franka_gripper/gripper_action \
 直接测试右夹爪：
 
 ```bash
-ros2 action send_goal /right_franka_gripper/gripper_action \
+ros2 action send_goal /right_franka_gripper/gripper_cmd \
   control_msgs/action/GripperCommand \
   "{command: {position: 0.02, max_effort: 20.0}}"
 ```
@@ -622,6 +635,8 @@ Gazebo 模式下，期望至少看到：
 joint_state_broadcaster active
 left_fr3_arm_controller active
 right_fr3_arm_controller active
+left_franka_gripper active
+right_franka_gripper active
 ```
 
 ## 注意事项

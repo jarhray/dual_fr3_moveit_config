@@ -49,12 +49,6 @@ def generate_launch_description():
 
     package_share = get_package_share_directory(package_name)
     franka_description_share = get_package_share_directory("franka_description")
-    gripper_config = os.path.join(
-        get_package_share_directory("franka_gripper"),
-        "config",
-        "franka_gripper_node.yaml",
-    )
-
     urdf_xacro = os.path.join(package_share, "config", "dual_fr3.gazebo.urdf.xacro")
     srdf_xacro = os.path.join(package_share, "config", "dual_fr3.srdf.xacro")
 
@@ -102,16 +96,20 @@ def generate_launch_description():
     ompl_planning_pipeline_config["move_group"].update(ompl_planning_yaml)
 
     moveit_simple_controllers_yaml = load_yaml(
-        package_name, "config/moveit_controllers.yaml"
+        package_name, "config/moveit_controllers_gazebo.yaml"
     )
     moveit_controllers = {
         "moveit_simple_controller_manager": moveit_simple_controllers_yaml,
-        "moveit_controller_manager": "moveit_simple_controller_manager/MoveItSimpleControllerManager",
+        "moveit_controller_manager": (
+            "moveit_simple_controller_manager/MoveItSimpleControllerManager"
+        ),
     }
 
     trajectory_execution = {
         "moveit_manage_controllers": True,
-        "trajectory_execution.allowed_execution_duration_scaling": trajectory_execution_duration_scaling,
+        "trajectory_execution.allowed_execution_duration_scaling": (
+            trajectory_execution_duration_scaling
+        ),
         "trajectory_execution.allowed_goal_duration_margin": trajectory_execution_goal_margin,
         "trajectory_execution.allowed_start_tolerance": 0.01,
     }
@@ -174,8 +172,6 @@ def generate_launch_description():
                 "use_sim_time": use_sim_time,
                 "source_list": [
                     "joint_state_broadcaster/joint_states",
-                    "left_franka_gripper/joint_states",
-                    "right_franka_gripper/joint_states",
                 ],
                 "rate": 30,
             },
@@ -202,44 +198,6 @@ def generate_launch_description():
                 ),
             },
         ],
-    )
-
-    left_fake_gripper = Node(
-        package=package_name,
-        executable="fake_gripper_action_server.py",
-        name="left_franka_gripper",
-        output="screen",
-        prefix="/usr/bin/python3",
-        parameters=[
-            {
-                "use_sim_time": use_sim_time,
-                "joint_names": [
-                    "left_fr3_finger_joint1",
-                    "left_fr3_finger_joint2",
-                ],
-            },
-            gripper_config,
-        ],
-        condition=IfCondition(load_gripper),
-    )
-
-    right_fake_gripper = Node(
-        package=package_name,
-        executable="fake_gripper_action_server.py",
-        name="right_franka_gripper",
-        output="screen",
-        prefix="/usr/bin/python3",
-        parameters=[
-            {
-                "use_sim_time": use_sim_time,
-                "joint_names": [
-                    "right_fr3_finger_joint1",
-                    "right_fr3_finger_joint2",
-                ],
-            },
-            gripper_config,
-        ],
-        condition=IfCondition(load_gripper),
     )
 
     rviz_node = Node(
@@ -279,12 +237,29 @@ def generate_launch_description():
             )
         )
 
+    for controller in ["left_franka_gripper", "right_franka_gripper"]:
+        controller_spawners.append(
+            Node(
+                package="controller_manager",
+                executable="spawner",
+                arguments=[
+                    controller,
+                    "--controller-manager",
+                    "/controller_manager",
+                    "--controller-manager-timeout",
+                    "60",
+                ],
+                output="screen",
+                condition=IfCondition(load_gripper),
+            )
+        )
+
     return LaunchDescription(
         [
             DeclareLaunchArgument(
                 "load_gripper",
                 default_value="true",
-                description="Load Franka hand geometry and fake gripper action servers.",
+                description="Load and control both Franka hands in Gazebo.",
             ),
             DeclareLaunchArgument(
                 "ee_id",
@@ -294,7 +269,7 @@ def generate_launch_description():
             DeclareLaunchArgument(
                 "gazebo_effort",
                 default_value="false",
-                description="Use the custom Gazebo hardware plugin.",
+                description="Expose effort command interfaces in Gazebo.",
             ),
             DeclareLaunchArgument(
                 "use_sim_time",
@@ -338,8 +313,6 @@ def generate_launch_description():
             spawn_robot,
             joint_state_publisher,
             move_group_node,
-            left_fake_gripper,
-            right_fake_gripper,
             rviz_node,
             RegisterEventHandler(
                 event_handler=OnProcessExit(
