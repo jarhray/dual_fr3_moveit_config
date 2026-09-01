@@ -68,7 +68,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://dual_fr3_moveit_config/meshes/collision/trunking.STL"/>
+        <mesh filename="package://dual_fr3_moveit_config/meshes/Trunking.STL"/>
       </geometry>
     </collision>
   </link>

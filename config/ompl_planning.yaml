@@ -12,18 +12,21 @@ planner_configs:
     max_nearest_neighbors: 10
 
 left_fr3_arm:
+  longest_valid_segment_fraction: 0.002
   planner_configs:
     - RRTConnectkConfigDefault
     - RRTstarkConfigDefault
     - PRMkConfigDefault
 
 right_fr3_arm:
+  longest_valid_segment_fraction: 0.002
   planner_configs:
     - RRTConnectkConfigDefault
     - RRTstarkConfigDefault
     - PRMkConfigDefault
 
 dual_fr3_arms:
+  longest_valid_segment_fraction: 0.002
   planner_configs:
     - RRTConnectkConfigDefault
     - RRTstarkConfigDefault
