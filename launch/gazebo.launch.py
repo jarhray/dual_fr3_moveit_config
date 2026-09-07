@@ -1,6 +1,5 @@
 import os
 
-import yaml
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import (
@@ -12,20 +11,15 @@ from launch.actions import (
 from launch.conditions import IfCondition
 from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 from launch_ros.substitutions import FindPackageShare
 
-
-def load_yaml(package_name, file_path):
-    package_path = get_package_share_directory(package_name)
-    absolute_file_path = os.path.join(package_path, file_path)
-    try:
-        with open(absolute_file_path, "r") as file:
-            return yaml.safe_load(file)
-    except OSError:
-        return None
+from dual_fr3_moveit_config.moveit_resources import (
+    build_moveit_resources,
+    load_yaml,
+)
 
 
 def generate_launch_description():
@@ -49,54 +43,18 @@ def generate_launch_description():
 
     package_share = get_package_share_directory(package_name)
     franka_description_share = get_package_share_directory("franka_description")
-    urdf_xacro = os.path.join(package_share, "config", "dual_fr3.gazebo.urdf.xacro")
-    srdf_xacro = os.path.join(package_share, "config", "dual_fr3.srdf.xacro")
-
-    robot_description_config = Command(
-        [
-            FindExecutable(name="xacro"),
-            " ",
-            urdf_xacro,
-            " load_gripper:=",
-            load_gripper,
-            " ee_id:=",
-            ee_id,
-            " gazebo_effort:=",
-            gazebo_effort,
-        ]
+    resources = build_moveit_resources(
+        "dual_fr3.gazebo.urdf.xacro",
+        {
+            "load_gripper": load_gripper,
+            "ee_id": ee_id,
+            "gazebo_effort": gazebo_effort,
+        },
     )
-    robot_description = {
-        "robot_description": ParameterValue(robot_description_config, value_type=str)
-    }
-
-    robot_description_semantic_config = Command(
-        [FindExecutable(name="xacro"), " ", srdf_xacro]
-    )
-    robot_description_semantic = {
-        "robot_description_semantic": ParameterValue(
-            robot_description_semantic_config, value_type=str
-        )
-    }
-
-    kinematics_yaml = load_yaml(package_name, "config/kinematics.yaml")
-
-    ompl_planning_pipeline_config = {
-        "move_group": {
-            "planning_plugin": "ompl_interface/OMPLPlanner",
-            "request_adapters": "default_planner_request_adapters/AddTimeOptimalParameterization "
-            "default_planner_request_adapters/ResolveConstraintFrames "
-            "default_planner_request_adapters/FixWorkspaceBounds "
-            "default_planner_request_adapters/FixStartStateBounds "
-            "default_planner_request_adapters/FixStartStateCollision "
-            "default_planner_request_adapters/FixStartStatePathConstraints",
-            "start_state_max_bounds_error": 0.1,
-
-            "path_tolerance": 0.001,
-            "resample_dt": 0.02,
-        }
-    }
-    ompl_planning_yaml = load_yaml(package_name, "config/ompl_planning.yaml")
-    ompl_planning_pipeline_config["move_group"].update(ompl_planning_yaml)
+    robot_description = resources.robot_description
+    robot_description_semantic = resources.robot_description_semantic
+    kinematics_yaml = resources.kinematics
+    ompl_planning_pipeline_config = resources.planning_pipeline
 
     moveit_simple_controllers_yaml = load_yaml(
         package_name, "config/moveit_controllers_gazebo.yaml"

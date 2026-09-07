@@ -6,24 +6,17 @@ from launch.actions import DeclareLaunchArgument, Shutdown
 from launch.conditions import IfCondition, UnlessCondition
 from launch.substitutions import (
     AndSubstitution,
-    Command,
-    FindExecutable,
     LaunchConfiguration,
     NotSubstitution,
 )
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
-import yaml
 
-
-def load_yaml(package_name, file_path):
-    package_path = get_package_share_directory(package_name)
-    absolute_file_path = os.path.join(package_path, file_path)
-    try:
-        with open(absolute_file_path, "r") as file:
-            return yaml.safe_load(file)
-    except OSError:
-        return None
+from dual_fr3_moveit_config.moveit_resources import (
+    build_moveit_resources,
+    build_robot_description,
+    load_yaml,
+)
 
 
 def generate_launch_description():
@@ -53,92 +46,58 @@ def generate_launch_description():
         "config",
         "franka_gripper_node.yaml",
     )
-    urdf_xacro = os.path.join(package_share, "config", "dual_fr3.urdf.xacro")
-    srdf_xacro = os.path.join(package_share, "config", "dual_fr3.srdf.xacro")
-
-    def robot_description_command(load_left_control, load_right_control):
-        return Command(
-            [
-                FindExecutable(name="xacro"),
-                " ",
-                urdf_xacro,
-                " use_fake_hardware:=",
-                use_fake_hardware,
-                " fake_sensor_commands:=",
-                fake_sensor_commands,
-                " left_robot_ip:=",
-                left_robot_ip,
-                " right_robot_ip:=",
-                right_robot_ip,
-                " load_left_ros2_control:=",
-                load_left_control,
-                " load_right_ros2_control:=",
-                load_right_control,
-                " load_gripper:=",
-                load_gripper,
-                " ee_id:=",
-                ee_id,
-            ]
-        )
-
-    robot_description_config = robot_description_command("true", "true")
-    robot_description = {
-        "robot_description": ParameterValue(robot_description_config, value_type=str)
+    common_urdf_mappings = {
+        "use_fake_hardware": use_fake_hardware,
+        "fake_sensor_commands": fake_sensor_commands,
+        "left_robot_ip": left_robot_ip,
+        "right_robot_ip": right_robot_ip,
+        "load_gripper": load_gripper,
+        "ee_id": ee_id,
     }
-    left_hardware_description = {
-        "robot_description": ParameterValue(
-            robot_description_command("true", "false"), value_type=str
-        )
-    }
-    right_hardware_description = {
-        "robot_description": ParameterValue(
-            robot_description_command("false", "true"), value_type=str
-        )
-    }
-
-    robot_description_semantic_config = Command(
-        [
-            FindExecutable(name="xacro"),
-            " ",
-            srdf_xacro,
-        ]
+    resources = build_moveit_resources(
+        "dual_fr3.urdf.xacro",
+        {
+            **common_urdf_mappings,
+            "load_left_ros2_control": "true",
+            "load_right_ros2_control": "true",
+        },
     )
-    robot_description_semantic = {
-        "robot_description_semantic": ParameterValue(
-            robot_description_semantic_config, value_type=str
-        )
-    }
-
-    kinematics_yaml = load_yaml(package_name, "config/kinematics.yaml")
-
-    ompl_planning_pipeline_config = {
-        "move_group": {
-            "planning_plugin": "ompl_interface/OMPLPlanner",
-            "request_adapters": "default_planner_request_adapters/AddTimeOptimalParameterization "
-            "default_planner_request_adapters/ResolveConstraintFrames "
-            "default_planner_request_adapters/FixWorkspaceBounds "
-            "default_planner_request_adapters/FixStartStateBounds "
-            "default_planner_request_adapters/FixStartStateCollision "
-            "default_planner_request_adapters/FixStartStatePathConstraints",
-            "start_state_max_bounds_error": 0.1,
-            "path_tolerance": 0.001,
-            "resample_dt": 0.02,
-        }
-    }
-    ompl_planning_yaml = load_yaml(package_name, "config/ompl_planning.yaml")
-    ompl_planning_pipeline_config["move_group"].update(ompl_planning_yaml)
+    robot_description = resources.robot_description
+    robot_description_semantic = resources.robot_description_semantic
+    kinematics_yaml = resources.kinematics
+    ompl_planning_pipeline_config = resources.planning_pipeline
+    left_hardware_description = build_robot_description(
+        "dual_fr3.urdf.xacro",
+        {
+            **common_urdf_mappings,
+            "load_left_ros2_control": "true",
+            "load_right_ros2_control": "false",
+        },
+    )
+    right_hardware_description = build_robot_description(
+        "dual_fr3.urdf.xacro",
+        {
+            **common_urdf_mappings,
+            "load_left_ros2_control": "false",
+            "load_right_ros2_control": "true",
+        },
+    )
 
     moveit_simple_controllers_yaml = load_yaml(
         package_name, "config/moveit_controllers.yaml"
     )
     moveit_controllers = {
         "moveit_simple_controller_manager": moveit_simple_controllers_yaml,
-        "moveit_controller_manager": "moveit_simple_controller_manager/MoveItSimpleControllerManager",
+        "moveit_controller_manager": (
+            "moveit_simple_controller_manager/MoveItSimpleControllerManager"
+        ),
     }
 
     trajectory_execution = {
         "moveit_manage_controllers": True,
-        "trajectory_execution.allowed_execution_duration_scaling": trajectory_execution_duration_scaling,
+        "trajectory_execution.allowed_execution_duration_scaling": (
+            trajectory_execution_duration_scaling
+        ),
         "trajectory_execution.allowed_goal_duration_margin": trajectory_execution_goal_margin,
         "trajectory_execution.allowed_start_tolerance": 0.01,
     }
