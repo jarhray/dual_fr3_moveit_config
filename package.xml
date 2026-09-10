@@ -13,6 +13,7 @@
   <exec_depend>ament_index_python</exec_depend>
   <exec_depend>controller_manager</exec_depend>
   <exec_depend>control_msgs</exec_depend>
+  <exec_depend>dual_fr3_maniskill</exec_depend>
   <exec_depend>franka_description</exec_depend>
   <exec_depend>franka_gripper</exec_depend>
   <exec_depend>franka_gazebo_hardware</exec_depend>

@@ -9,6 +9,20 @@
                        xyz_ee:='0 0 0'
                        tcp_xyz:='0 0 0.1524'
                        tcp_rpy:='0 0 0'">
+    <!-- Palm-aligned CAD URDF assembly at zero joint position (metres).
+         New finger1 -> old finger1: Rz(-pi/2),
+         t=(-0.0000003652, -0.001022332209997, -0.1039).
+         Compose with the old mesh origin (0, 0, 0.0964) in the finger link.
+         The opposite finger needs its own X offset before its joint's Rz(pi).
+         See docs/research_finger_mesh.md for the palm and joint transforms. -->
+    <xacro:property name="research_finger_mesh"
+                    value="package://dual_fr3_moveit_config/meshes/research_finger/finger1.STL"/>
+    <xacro:property name="research_left_finger_xyz"
+                    value="-0.0000003652 -0.001022332209997 -0.0075"/>
+    <xacro:property name="research_right_finger_xyz"
+                    value="0.0000003652 -0.001022332209997 -0.0075"/>
+    <xacro:property name="research_finger_rpy" value="0 0 ${-pi/2}"/>
+
     <joint name="${prefix}hand_joint" type="fixed">
       <parent link="${connected_to}"/>
       <child link="${prefix}hand"/>
@@ -38,18 +52,18 @@
 
     <link name="${prefix}leftfinger">
       <visual name="${prefix}leftfinger_visual">
-        <origin xyz="0 0 0.0964" rpy="0 0 0"/>
+        <origin xyz="${research_left_finger_xyz}" rpy="${research_finger_rpy}"/>
         <geometry>
-          <mesh filename="package://dual_fr3_moveit_config/meshes/research_finger/finger.STL"/>
+          <mesh filename="${research_finger_mesh}"/>
         </geometry>
         <material name="${prefix}leftfinger_material">
           <color rgba="0.75294 0.75294 0.75294 1"/>
         </material>
       </visual>
       <collision name="${prefix}leftfinger_collision">
-        <origin xyz="0 0 0.0964" rpy="0 0 0"/>
+        <origin xyz="${research_left_finger_xyz}" rpy="${research_finger_rpy}"/>
         <geometry>
-          <mesh filename="package://dual_fr3_moveit_config/meshes/research_finger/finger.STL"/>
+          <mesh filename="${research_finger_mesh}"/>
         </geometry>
       </collision>
       <xacro:ee-inertials name="leftfinger"/>
@@ -57,18 +71,18 @@
 
     <link name="${prefix}rightfinger">
       <visual name="${prefix}rightfinger_visual">
-        <origin xyz="0 0 0.0964" rpy="0 0 0"/>
+        <origin xyz="${research_right_finger_xyz}" rpy="${research_finger_rpy}"/>
         <geometry>
-          <mesh filename="package://dual_fr3_moveit_config/meshes/research_finger/finger.STL"/>
+          <mesh filename="${research_finger_mesh}"/>
         </geometry>
         <material name="${prefix}rightfinger_material">
           <color rgba="0.75294 0.75294 0.75294 1"/>
         </material>
       </visual>
       <collision name="${prefix}rightfinger_collision">
-        <origin xyz="0 0 0.0964" rpy="0 0 0"/>
+        <origin xyz="${research_right_finger_xyz}" rpy="${research_finger_rpy}"/>
         <geometry>
-          <mesh filename="package://dual_fr3_moveit_config/meshes/research_finger/finger.STL"/>
+          <mesh filename="${research_finger_mesh}"/>
         </geometry>
       </collision>
       <xacro:ee-inertials name="rightfinger"/>
