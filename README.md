@@ -2,6 +2,8 @@
 
 ManiSkill2 / SAPIEN 2 物理执行后端支持双臂、夹爪和 MTC，环境安装、构建与验证步骤见
 [ManiSkill 使用说明](docs/maniskill.md)。
+普通双臂与 USB 线缆场景共用 `maniskill.launch.py`，通过
+`maniskill_scene:=robot|usb_cable` 选择；线缆物理实现位于 `dual_fr3_maniskill`。
 
 这是一个基础的双臂 FR3 MoveIt 2 配置包。它把两台 FR3、两个 Franka hand
 夹爪和一个固定工作台放在同一个 `robot_description` 里，并启动一个共享的

@@ -81,6 +81,29 @@ ros2 launch dual_fr3_moveit_config demo.launch.py \
 该启动文件不启动 Gazebo、fake hardware、controller_manager 或 joint_state_publisher。
 夹爪 action 使用 Gazebo 分支已采用的 `gripper_cmd` 名称。
 
+## USB 线缆场景
+
+线缆仿真实现已从 `dual_fr3_usb_cable_demo` 合并到 `dual_fr3_maniskill`。
+使用同一个 MoveIt 启动入口选择场景：
+
+```bash
+ros2 launch dual_fr3_moveit_config maniskill.launch.py \
+  maniskill_scene:=usb_cable maniskill_python:="$MANISKILL_PYTHON"
+```
+
+也可使用 `ros2 launch dual_fr3_moveit_config usb_cable.launch.py`，或在本包
+`demo.launch.py` 中指定 `simulation_backend:=maniskill maniskill_scene:=usb_cable`。
+默认 `maniskill_scene:=robot` 保留普通双臂行为。
+
+`maniskill_resources.py` 统一构造最终 URDF/SRDF；仿真、MoveIt、TF 和 RViz 共用该结果。
+USB 网格由仿真包提供；仿真包接收上层传入的描述，不反向依赖本配置包。
+`cable_config:=...` 指定 USB/线缆参数，`maniskill_config:=...` 指定 ROS 桥接参数。
+线缆场景默认控制/物理/发布频率为 50/500/25 Hz，普通场景为 100/500/50 Hz。
+
+USB 仍固定在左 TCP，左夹爪动作仍被拒绝。此次合并未把线缆场景接入 MTC 任务入口。
+详细模型说明和独立检查命令见
+[线缆说明](../../dual_fr3_maniskill/docs/usb_cable.md)。
+
 ## ROS 接口
 
 | 接口 | 类型 / 行为 |
@@ -125,9 +148,10 @@ PhysX 碰撞位掩码，不依赖 SAPIEN 只识别 `reason=Default` 的默认加
 关节驱动使用 URDF effort 上限，每个物理子步计算并施加机器人被动力补偿。
 ROS 桥接从 SAPIEN 2 的实际 `qpos/qvel` 和 link pose 读取反馈，不使用目标位置代替测量。
 
-当前双 FR3 场景范围是双臂、夹爪与固定场景执行闭环。环境降级本身不会建立
-MPM 线缆，现有 MTC 关键点也不会自动变成软体材料约束。尚未建立该场景中的
-柔性线缆、力控和视觉反馈；
+普通 `robot` 场景保留双臂、夹爪与固定场景执行闭环。可选 `usb_cable` 场景加入
+USB 固定安装和 MPM/纤维/刚体接触混合线缆模型，尚未标定真实线材。
+现有 MTC 入口仍使用普通场景，任务关键点不会自动变成软体材料约束；
+线缆场景尚未接入 MTC 的夹爪流程、力控或视觉反馈。
 也没有自动把运行时新增的 MoveIt CollisionObject 同步成 ManiSkill actor。
 物理接触网格与 MoveIt 网格的加载方式不同，遇到接触阻挡时应检查碰撞形状和动力学，
 不能用假反馈或无条件 action 成功来绕过。

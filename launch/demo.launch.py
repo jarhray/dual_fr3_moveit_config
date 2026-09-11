@@ -15,6 +15,7 @@ from launch.substitutions import (
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 
+from dual_fr3_maniskill.scenes import SCENES
 from dual_fr3_moveit_config.backends import DEFAULT_SIMULATION_BACKEND, SIMULATION_BACKENDS
 from dual_fr3_moveit_config.moveit_resources import (
     build_moveit_resources,
@@ -358,6 +359,10 @@ def generate_launch_description():
             DeclareLaunchArgument("gz_args", default_value="empty.sdf -r"),
             DeclareLaunchArgument("gazebo_effort", default_value="false"),
             DeclareLaunchArgument("maniskill_viewer", default_value="true"),
+            DeclareLaunchArgument("maniskill_scene", default_value="robot", choices=SCENES),
+            DeclareLaunchArgument("cable_config", default_value=""),
+            DeclareLaunchArgument("maniskill_config", default_value=""),
+            DeclareLaunchArgument("rviz_config", default_value=""),
             DeclareLaunchArgument("maniskill_python", default_value=os.environ.get(
                 "MANISKILL_PYTHON", str(Path.cwd() / ".venv/bin/python"))),
             DeclareLaunchArgument(
@@ -397,12 +402,18 @@ def generate_launch_description():
             ),
             DeclareLaunchArgument(
                 "trajectory_execution_duration_scaling",
-                default_value="1.2",
+                default_value=PythonExpression([
+                    "'10.0' if '", backend, "' == 'maniskill' and '",
+                    LaunchConfiguration("maniskill_scene"), "' in ('usb_cable', 'trunking_cable') else '1.2'",
+                ]),
                 description="Allowed execution duration scaling for move_group.",
             ),
             DeclareLaunchArgument(
                 "trajectory_execution_goal_margin",
-                default_value="0.5",
+                default_value=PythonExpression([
+                    "'5.0' if '", backend, "' == 'maniskill' and '",
+                    LaunchConfiguration("maniskill_scene"), "' in ('usb_cable', 'trunking_cable') else '0.5'",
+                ]),
                 description="Allowed goal duration margin for move_group.",
             ),
             DeclareLaunchArgument(

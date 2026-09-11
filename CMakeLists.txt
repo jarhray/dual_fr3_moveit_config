@@ -16,7 +16,13 @@ install(
     scripts/fake_gripper_action_server.py
     scripts/fr3_controller.py
     scripts/fr3_controller_lin.py
+    scripts/check_usb_cable.py
   DESTINATION lib/${PROJECT_NAME}
 )
+
+if(BUILD_TESTING)
+  find_package(ament_cmake_pytest REQUIRED)
+  ament_add_pytest_test(test_maniskill_scene_launch test/test_maniskill_scene_launch.py)
+endif()
 
 ament_package()
