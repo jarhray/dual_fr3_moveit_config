@@ -1,17 +1,22 @@
 import os
+from pathlib import Path
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, Shutdown
+from launch.actions import DeclareLaunchArgument, GroupAction, IncludeLaunchDescription, Shutdown
 from launch.conditions import IfCondition, UnlessCondition
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import (
     AndSubstitution,
     LaunchConfiguration,
     NotSubstitution,
+    PythonExpression,
 )
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 
+from dual_fr3_maniskill.scenes import SCENES
+from dual_fr3_moveit_config.backends import DEFAULT_SIMULATION_BACKEND, SIMULATION_BACKENDS
 from dual_fr3_moveit_config.moveit_resources import (
     build_moveit_resources,
     build_robot_description,
@@ -29,7 +34,9 @@ def generate_launch_description():
         "trajectory_execution_goal_margin"
     )
 
-    use_fake_hardware = LaunchConfiguration("use_fake_hardware")
+    backend = LaunchConfiguration("simulation_backend")
+    # The upstream Franka Xacro still needs a bool to select its hardware plugin.
+    mock_hardware = PythonExpression(["'", backend, "' == 'fake'"])
     fake_sensor_commands = LaunchConfiguration("fake_sensor_commands")
     left_robot_ip = LaunchConfiguration("left_robot_ip")
     right_robot_ip = LaunchConfiguration("right_robot_ip")
@@ -47,7 +54,7 @@ def generate_launch_description():
         "franka_gripper_node.yaml",
     )
     common_urdf_mappings = {
-        "use_fake_hardware": use_fake_hardware,
+        "use_fake_hardware": mock_hardware,
         "fake_sensor_commands": fake_sensor_commands,
         "left_robot_ip": left_robot_ip,
         "right_robot_ip": right_robot_ip,
@@ -221,7 +228,7 @@ def generate_launch_description():
                     "60",
                 ],
                 output="screen",
-                condition=UnlessCondition(use_fake_hardware),
+                condition=UnlessCondition(mock_hardware),
             )
         )
 
@@ -241,7 +248,7 @@ def generate_launch_description():
             gripper_config,
         ],
         condition=IfCondition(
-            AndSubstitution(start_gripper, NotSubstitution(use_fake_hardware))
+            AndSubstitution(start_gripper, NotSubstitution(mock_hardware))
         ),
     )
 
@@ -261,7 +268,7 @@ def generate_launch_description():
             gripper_config,
         ],
         condition=IfCondition(
-            AndSubstitution(start_gripper, NotSubstitution(use_fake_hardware))
+            AndSubstitution(start_gripper, NotSubstitution(mock_hardware))
         ),
     )
 
@@ -280,7 +287,7 @@ def generate_launch_description():
             },
             gripper_config,
         ],
-        condition=IfCondition(AndSubstitution(start_gripper, use_fake_hardware)),
+        condition=IfCondition(AndSubstitution(start_gripper, mock_hardware)),
     )
 
     right_fake_gripper = Node(
@@ -298,7 +305,7 @@ def generate_launch_description():
             },
             gripper_config,
         ],
-        condition=IfCondition(AndSubstitution(start_gripper, use_fake_hardware)),
+        condition=IfCondition(AndSubstitution(start_gripper, mock_hardware)),
     )
 
     rviz_node = Node(
@@ -316,13 +323,48 @@ def generate_launch_description():
         condition=IfCondition(use_rviz),
     )
 
+    hardware = GroupAction(
+        condition=IfCondition(PythonExpression(["'", backend, "' in ('fake', 'real')"])),
+        actions=[
+            robot_state_publisher,
+            joint_state_publisher,
+            move_group_node,
+            left_ros2_control_node,
+            right_ros2_control_node,
+            rviz_node,
+            left_gripper,
+            right_gripper,
+            left_fake_gripper,
+            right_fake_gripper,
+            *load_controllers,
+            *franka_state_broadcasters,
+        ],
+    )
+    simulators = [
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(os.path.join(package_share, "launch", f"{name}.launch.py")),
+            condition=IfCondition(PythonExpression(["'", backend, f"' == '{name}'"])),
+        )
+        for name in ("gazebo", "maniskill")
+    ]
+
     return LaunchDescription(
         [
             DeclareLaunchArgument(
-                "use_fake_hardware",
-                default_value="true",
-                description="Use ros2_control mock hardware.",
+                "simulation_backend",
+                default_value=DEFAULT_SIMULATION_BACKEND,
+                choices=SIMULATION_BACKENDS,
+                description="Robot execution backend (default: gazebo).",
             ),
+            DeclareLaunchArgument("gz_args", default_value="empty.sdf -r"),
+            DeclareLaunchArgument("gazebo_effort", default_value="false"),
+            DeclareLaunchArgument("maniskill_viewer", default_value="true"),
+            DeclareLaunchArgument("maniskill_scene", default_value="robot", choices=SCENES),
+            DeclareLaunchArgument("cable_config", default_value=""),
+            DeclareLaunchArgument("maniskill_config", default_value=""),
+            DeclareLaunchArgument("rviz_config", default_value=""),
+            DeclareLaunchArgument("maniskill_python", default_value=os.environ.get(
+                "MANISKILL_PYTHON", str(Path.cwd() / ".venv/bin/python"))),
             DeclareLaunchArgument(
                 "fake_sensor_commands",
                 default_value="false",
@@ -360,12 +402,18 @@ def generate_launch_description():
             ),
             DeclareLaunchArgument(
                 "trajectory_execution_duration_scaling",
-                default_value="1.2",
+                default_value=PythonExpression([
+                    "'10.0' if '", backend, "' == 'maniskill' and '",
+                    LaunchConfiguration("maniskill_scene"), "' in ('usb_cable', 'trunking_cable') else '1.2'",
+                ]),
                 description="Allowed execution duration scaling for move_group.",
             ),
             DeclareLaunchArgument(
                 "trajectory_execution_goal_margin",
-                default_value="0.5",
+                default_value=PythonExpression([
+                    "'5.0' if '", backend, "' == 'maniskill' and '",
+                    LaunchConfiguration("maniskill_scene"), "' in ('usb_cable', 'trunking_cable') else '0.5'",
+                ]),
                 description="Allowed goal duration margin for move_group.",
             ),
             DeclareLaunchArgument(
@@ -378,17 +426,7 @@ def generate_launch_description():
                 default_value="",
                 description="Disabled MoveGroup capabilities.",
             ),
-            robot_state_publisher,
-            joint_state_publisher,
-            move_group_node,
-            left_ros2_control_node,
-            right_ros2_control_node,
-            rviz_node,
-            left_gripper,
-            right_gripper,
-            left_fake_gripper,
-            right_fake_gripper,
+            hardware,
+            *simulators,
         ]
-        + load_controllers
-        + franka_state_broadcasters
     )

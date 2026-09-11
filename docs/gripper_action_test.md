@@ -29,7 +29,7 @@ source /opt/ros/humble/setup.bash
 source install/setup.bash
 
 ros2 launch dual_fr3_moveit_config demo.launch.py \
-  use_fake_hardware:=false \
+  simulation_backend:=real \
   left_robot_ip:=192.168.1.2 \
   right_robot_ip:=192.168.2.2 \
   load_gripper:=true \

@@ -1,5 +1,10 @@
 # Dual FR3 MoveIt 配置包
 
+ManiSkill2 / SAPIEN 2 物理执行后端支持双臂、夹爪和 MTC，环境安装、构建与验证步骤见
+[ManiSkill 使用说明](docs/maniskill.md)。
+普通双臂与 USB 线缆场景共用 `maniskill.launch.py`，通过
+`maniskill_scene:=robot|usb_cable` 选择；线缆物理实现位于 `dual_fr3_maniskill`。
+
 这是一个基础的双臂 FR3 MoveIt 2 配置包。它把两台 FR3、两个 Franka hand
 夹爪和一个固定工作台放在同一个 `robot_description` 里，并启动一个共享的
 `move_group` 和规划场景。
@@ -71,6 +76,9 @@ SRDF 中定义了这些规划组：
 可以在同一个规划请求里同时考虑左右臂关节，并进行双臂之间的碰撞检查。
 
 ## 双夹爪控制
+
+自定义手指当前使用 `finger1.STL`；新版 CAD 导出坐标系的补偿、截面对比及回退方式
+见 [手指 mesh 替换记录](docs/research_finger_mesh.md)。
 
 MoveIt controller 映射中暴露了两个独立的 `GripperCommand` action：
 
@@ -321,16 +329,16 @@ source install/setup.bash
 
 ## 运行 Fake Hardware Demo
 
-启动完整 demo：
+显式选择 `fake`（省略后端参数时默认启动 Gazebo）：
 
 ```bash
-ros2 launch dual_fr3_moveit_config demo.launch.py
+ros2 launch dual_fr3_moveit_config demo.launch.py simulation_backend:=fake
 ```
 
 不启动 RViz：
 
 ```bash
-ros2 launch dual_fr3_moveit_config demo.launch.py use_rviz:=false
+ros2 launch dual_fr3_moveit_config demo.launch.py simulation_backend:=fake use_rviz:=false
 ```
 
 默认启动内容：
@@ -338,7 +346,7 @@ ros2 launch dual_fr3_moveit_config demo.launch.py use_rviz:=false
 - `robot_state_publisher`
 - `joint_state_publisher`
 - 一个 `move_group`
-- 一个 `ros2_control_node`
+- 左右各一个 `ros2_control_node`
 - `joint_state_broadcaster`
 - `left_fr3_arm_controller`
 - `right_fr3_arm_controller`
@@ -347,22 +355,22 @@ ros2 launch dual_fr3_moveit_config demo.launch.py use_rviz:=false
 
 ## 运行 Gazebo 仿真
 
-Gazebo 仿真使用独立启动文件：
+默认后端是 Gazebo，可直接使用统一入口（也可保留使用专用的 `gazebo.launch.py`）：
 
 ```bash
-ros2 launch dual_fr3_moveit_config gazebo.launch.py
+ros2 launch dual_fr3_moveit_config demo.launch.py
 ```
 
 不启动 RViz：
 
 ```bash
-ros2 launch dual_fr3_moveit_config gazebo.launch.py use_rviz:=false
+ros2 launch dual_fr3_moveit_config demo.launch.py simulation_backend:=gazebo use_rviz:=false
 ```
 
 传递 Gazebo 参数：
 
 ```bash
-ros2 launch dual_fr3_moveit_config gazebo.launch.py gz_args:="empty.sdf -r"
+ros2 launch dual_fr3_moveit_config demo.launch.py simulation_backend:=gazebo gz_args:="empty.sdf -r"
 ```
 
 Gazebo 模式启动内容：
@@ -437,8 +445,12 @@ Gazebo 模式下两侧 `position_controllers/GripperActionController` 直接控�
 
 ## Launch 参数
 
+`demo.launch.py` 使用 `simulation_backend` 统一选择后端，默认 `gazebo`。
+支持 `gazebo`（Gazebo）、`maniskill`（ManiSkill）、`fake`（mock hardware）、
+`real`（真实硬件）。原 `use_gazebo`、`use_fake_hardware` 启动参数已移除。
+
 ```text
-use_fake_hardware:=true
+simulation_backend:=gazebo
 fake_sensor_commands:=false
 left_robot_ip:=""
 right_robot_ip:=""
@@ -453,14 +465,14 @@ use_rviz:=true
 
 ```bash
 ros2 launch dual_fr3_moveit_config demo.launch.py \
-  use_fake_hardware:=false \
+  simulation_backend:=real \
   left_robot_ip:=<left_fr3_ip> \
   right_robot_ip:=<right_fr3_ip>
 ```
 
 ```bash
 ros2 launch dual_fr3_moveit_config demo.launch.py \
-  use_fake_hardware:=false \
+  simulation_backend:=real \
   left_robot_ip:=192.168.1.2 \
   right_robot_ip:=192.168.2.2
 ```
