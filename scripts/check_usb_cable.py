@@ -80,7 +80,7 @@ def main():
             # A rejected reset must leave the current physical state intact.
             before_reset = sim.cable.positions.copy()
             invalid = np.tile([.4, .7, -.02], (len(before_reset), 1))
-            with patch('dual_fr3_maniskill.cable.mpm_cable.initial_particle_positions', return_value=invalid):
+            with patch.object(sim.cable, 'layout', return_value=invalid):
                 try:
                     sim.cable.reset()
                 except RuntimeError as exc:

@@ -53,6 +53,9 @@ ros2 launch dual_fr3_moveit_config usb_cable.launch.py \
 
 USB 场景将插头固定在左 TCP，拒绝左夹爪动作，可通过左臂运动观察线缆响应。准备阶段夹持线缆并执行走线，应使用 [MTC 入口](../dual_fr3_trunking_mtc/README.md)。
 
+当前线缆物理仅有 MPM，已整理为对照基线；`simulation_backend` 选择机器人环境，尚不能选择 MPM/细杆。
+后续细杆与求解器参数的接入说明见[线缆后端交接文档](../dual_fr3_maniskill/docs/cable_backends.md)。
+
 ### 真机
 
 将示例 IP 替换为实际机器人地址：
