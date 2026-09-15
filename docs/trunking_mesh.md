@@ -3,7 +3,8 @@
 ## 当前 MTC 试验选择
 
 ManiSkill 的 `trunking_cable` 场景读取线缆 YAML 的 `scene.trunking_mesh`，
-在最终共享 URDF 中一起选择显示、碰撞网格及对应局部原点：
+选择碰撞网格；显示默认跟随它，也可通过 `scene.trunking_visual_mesh` 单独指定。
+两个字段接受相同的模型名，并分别使用对应局部原点：
 
 | 值 | 网格 | 局部原点 xyz / m |
 | --- | --- | --- |
@@ -12,9 +13,19 @@ ManiSkill 的 `trunking_cable` 场景读取线缆 YAML 的 `scene.trunking_mesh`
 
 当前默认 `trunking_cable.yaml` 使用原始网格、3 mm 线径和校正后的初始穿线位置。
 已完成完整任务的简化网格 / 2 mm 配置保存在 `trunking_cable_simplified_2mm.yaml`。
+该配置当前使用简化碰撞、原始显示：
+
+```yaml
+scene:
+  trunking_mesh: simplified
+  trunking_visual_mesh: original
+```
+
+MoveIt / MTC 使用简化碰撞几何，ManiSkill / RViz 使用原始显示几何。
+省略 `trunking_visual_mesh` 时保持原有的显示与碰撞一起切换行为。
 详细验证见[3 mm 试验](../../dual_fr3_maniskill/docs/debugging_summary.md#original-3mm)。
 此选择仅作用于启用线缆的 ManiSkill 场景；普通机器人及 Gazebo 的 Xacro 默认仍为简化网格。
-未指定该 YAML 字段时保留输入 URDF，历史配置并不自动固定线槽版本。
+两个 YAML 字段均未指定时保留输入 URDF；只指定显示字段时保留输入的碰撞几何。
 
 ## 简化网格来源与坐标对齐
 
@@ -36,12 +47,14 @@ ManiSkill 的 `trunking_cable` 场景读取线缆 YAML 的 `scene.trunking_mesh`
 
 新文件另含一个独立零件，共有 13 个封闭网格分量。其最高点为 88.8 mm，
 原有槽壁最高点仍为 58.4 mm；用户确认保留新尺寸，未删除或压缩此零件。
-显示与碰撞都包含它，以便检查规划路径与实际接触。
+Xacro 默认显示与碰撞都包含它。简化版配置覆盖为原始显示模型后，这个额外零件仍存在于
+简化碰撞中，但不会出现在原始显示网格中；查看实际碰撞形状时可在 RViz 中启用碰撞几何显示。
 
 构建并重启场景后生效：
 
 ```bash
-colcon build --symlink-install --packages-select dual_fr3_moveit_config
+colcon build --symlink-install --packages-select dual_fr3_maniskill dual_fr3_moveit_config \
+  --cmake-args -DPython3_EXECUTABLE=/usr/bin/python3
 source install/setup.bash
 ```
 

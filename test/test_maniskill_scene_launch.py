@@ -262,18 +262,26 @@ def test_research_finger_bore_fits_the_mtc_cable(tmp_path, config_file):
             assert distance.min() < .0013
 
 
-@pytest.mark.parametrize("config_file,mesh,origin", [
-    ("trunking_cable.yaml", "Trunking.STL", "0 0 0"),
-    ("trunking_cable_simplified_2mm.yaml", "Trunking_simplify.stl", "0.00014546 -0.00068397 0"),
+@pytest.mark.parametrize("config_file,inherit_visual,mesh,origin", [
+    ("trunking_cable.yaml", False, "Trunking.STL", "0 0 0"),
+    ("trunking_cable_simplified_2mm.yaml", False, "Trunking_simplify.stl", "0.00014546 -0.00068397 0"),
+    ("trunking_cable_simplified_2mm.yaml", True, "Trunking_simplify.stl", "0.00014546 -0.00068397 0"),
 ])
-def test_mtc_mesh_selection_reaches_all_scene_consumers(config_file, mesh, origin):
+def test_mtc_mesh_selection_reaches_all_scene_consumers(tmp_path, config_file, inherit_visual, mesh, origin):
     path = SOURCE/"dual_fr3_maniskill/config"/config_file
+    if inherit_visual:
+        config = yaml.safe_load(path.read_text())
+        del config["scene"]["trunking_visual_mesh"]
+        path = tmp_path/"legacy.yaml"
+        path.write_text(yaml.safe_dump(config))
     nodes, context = expand_launch("demo.launch.py", simulation_backend="maniskill",
                                   maniskill_scene="trunking_cable", cable_config=str(path))
     for node in nodes:
         root = ET.fromstring(node_parameters(node, context)["robot_description"])
         trunking = root.find("link[@name='trunking']")
-        for kind in ("visual", "collision"):
+        expected = {"collision": (mesh, origin),
+                    "visual": (mesh, origin) if inherit_visual else ("Trunking.STL", "0 0 0")}
+        for kind, (expected_mesh, expected_origin) in expected.items():
             shape = trunking.find(kind)
-            assert shape.find("geometry/mesh").get("filename").endswith("/"+mesh)
-            assert shape.find("origin").get("xyz") == origin
+            assert shape.find("geometry/mesh").get("filename").endswith("/"+expected_mesh)
+            assert shape.find("origin").get("xyz") == expected_origin
