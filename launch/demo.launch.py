@@ -15,6 +15,7 @@ from launch.substitutions import (
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 
+from dual_fr3_maniskill.cable.backends import CABLE_SOLVERS
 from dual_fr3_maniskill.scenes import SCENES
 from dual_fr3_moveit_config.backends import DEFAULT_SIMULATION_BACKEND, SIMULATION_BACKENDS
 from dual_fr3_moveit_config.moveit_resources import (
@@ -360,7 +361,9 @@ def generate_launch_description():
             DeclareLaunchArgument("gazebo_effort", default_value="false"),
             DeclareLaunchArgument("maniskill_viewer", default_value="true"),
             DeclareLaunchArgument("maniskill_scene", default_value="robot", choices=SCENES),
+            DeclareLaunchArgument("cable_solver", default_value="mpm", choices=CABLE_SOLVERS),
             DeclareLaunchArgument("cable_config", default_value=""),
+            DeclareLaunchArgument("cable_trace_dir", default_value=""),
             DeclareLaunchArgument("maniskill_config", default_value=""),
             DeclareLaunchArgument("rviz_config", default_value=""),
             DeclareLaunchArgument("maniskill_python", default_value=os.environ.get(

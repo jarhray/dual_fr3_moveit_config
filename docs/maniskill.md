@@ -7,6 +7,7 @@
 - [ROS 接口与仿真模型](../../dual_fr3_maniskill/docs/interfaces.md)
 - [独立 USB 线缆场景](../../dual_fr3_maniskill/docs/usb_cable.md)
 - [MTC 准备阶段线缆](../../dual_fr3_maniskill/docs/mtc_cable.md)
+- [简化线槽模型与坐标对齐](trunking_mesh.md)
 
 加载 ROS、工作区和 ManiSkill 环境后，在工作区根目录选择一个入口：
 

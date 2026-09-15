@@ -61,18 +61,19 @@
     </inertial>
   </link>
 
+  <!-- Compensate the simplified CAD export origin; keep the existing fixture layout. -->
   <link name="trunking">
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0.00014546 -0.00068397 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://dual_fr3_moveit_config/meshes/Trunking.STL"/>
+        <mesh filename="package://dual_fr3_moveit_config/meshes/Trunking_simplify.stl"/>
       </geometry>
       <material name="fixture_white"/>
     </visual>
     <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0.00014546 -0.00068397 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://dual_fr3_moveit_config/meshes/Trunking.STL"/>
+        <mesh filename="package://dual_fr3_moveit_config/meshes/Trunking_simplify.stl"/>
       </geometry>
     </collision>
     <inertial>

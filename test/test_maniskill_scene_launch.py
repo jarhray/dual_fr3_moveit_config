@@ -187,13 +187,61 @@ build_maniskill_description(scene='usb_cable')
 '''
     subprocess.run([sys.executable, "-c", script], check=True, capture_output=True, text=True)
 
-def test_research_finger_bore_fits_the_mtc_cable(tmp_path):
+
+@pytest.mark.parametrize("filename,overrides", [
+    ("maniskill.launch.py", {"maniskill_scene": "trunking_cable"}),
+    ("usb_cable.launch.py", {}),
+    ("demo.launch.py", {"simulation_backend": "maniskill", "maniskill_scene": "trunking_cable"}),
+])
+def test_rope_solver_reaches_physics_bridge(filename, overrides):
+    nodes, context = expand_launch(filename, cable_solver="rope_actor", cable_trace_dir="/tmp/rope trace", **overrides)
+    bridge, = [n for n in nodes if resolve(context, n.node_package) == "dual_fr3_maniskill"]
+    assert node_parameters(bridge, context)["cable_solver"] == "rope_actor"
+    assert node_parameters(bridge, context)["cable_trace_dir"] == "/tmp/rope trace"
+
+
+@pytest.mark.parametrize("scene,solver", [("robot", "rope_actor"), ("trunking_cable", "mpm")])
+def test_trace_requires_rope_cable_scene(scene, solver):
+    with pytest.raises(ValueError, match="cable_trace_dir requires"):
+        expand_launch("maniskill.launch.py", maniskill_scene=scene, cable_solver=solver,
+                      cable_trace_dir="/tmp/rope trace")
+
+
+def test_rope_only_yaml_can_build_usb_moveit_geometry(tmp_path):
+    config = load_config(resolve_cable_config())
+    del config["mpm"]
+    for key in ("particle_spacing", "young_modulus", "axial_young_modulus", "axial_iterations", "yield_stress", "poisson_ratio"):
+        del config["cable"][key]
+    path = tmp_path/"rope.yaml"
+    path.write_text(yaml.safe_dump(config))
+    nodes, context = expand_launch("usb_cable.launch.py", cable_solver="rope_actor", cable_config=str(path))
+    bridge, = [n for n in nodes if resolve(context, n.node_package) == "dual_fr3_maniskill"]
+    assert node_parameters(bridge, context)["cable_solver"] == "rope_actor"
+
+
+def test_invalid_cable_solver_is_rejected_by_launch():
+    with pytest.raises(RuntimeError, match="is not valid"):
+        expand_launch("usb_cable.launch.py", cable_solver="unsupported")
+
+
+@pytest.mark.parametrize("direction", ["forward", "reverse"])
+@pytest.mark.parametrize("filename", ["maniskill.launch.py", "demo.launch.py"])
+def test_leader_orientation_reaches_deferred_cable_bridge(filename, direction):
+    nodes, context = expand_launch(filename, simulation_backend="maniskill",
+        maniskill_scene="trunking_cable", leader_orientation_direction=direction)
+    bridge, = [n for n in nodes if resolve(context, n.node_package) == "dual_fr3_maniskill"]
+    assert node_parameters(bridge, context)["leader_orientation_direction"] == direction
+
+@pytest.mark.parametrize("config_file", ["trunking_cable.yaml", "trunking_cable_simplified_2mm.yaml"])
+def test_research_finger_bore_fits_the_mtc_cable(tmp_path, config_file):
     import trimesh
     import numpy as np
     from dual_fr3_maniskill.cable.mesh_contacts import finger_collision_meshes, closed_oriented_shells
     from dual_fr3_maniskill.assets import prepare_assets
     from dual_fr3_moveit_config.maniskill_resources import build_maniskill_description
-    description, semantic = build_maniskill_description(scene='trunking_cable')
+    path = SOURCE/"dual_fr3_maniskill/config"/config_file
+    config = load_config(path)
+    description, semantic = build_maniskill_description(scene='trunking_cable', cable_config=path)
     assets = prepare_assets(description, semantic, tmp_path)
     robot = ET.fromstring(description)
     tcp_z = float(robot.find("joint[@name='right_fr3_hand_tcp_joint']/origin").get('xyz').split()[2])
@@ -203,9 +251,29 @@ def test_research_finger_bore_fits_the_mtc_cable(tmp_path):
         vertices, indices = shapes[0]
         mesh = trimesh.Trimesh(vertices=vertices, faces=indices.reshape(-1, 3), process=True)
         assert closed_oriented_shells(mesh)
-        samples = np.column_stack((np.linspace(-.012, .012, 31), np.zeros(31), np.full(31, tcp_z-.0584)))
+        samples = np.column_stack((np.linspace(-.012, .012, 101), np.zeros(101), np.full(101, tcp_z-.0584)))
+        samples += config['guide']['center_offset']
         _, distance, _ = trimesh.proximity.closest_point_naive(mesh, samples)
-        radius = load_config(resolve_cable_config(scene='trunking_cable'))['cable']['diameter']/2
+        radius = config['cable']['diameter']/2
         assert distance.min() > radius + .0001
-        # The old 3.5 mm demo cable would overlap the existing CAD bore.
-        assert distance.min() < .00175
+        if config_file == "trunking_cable.yaml":
+            assert distance.min() > .0035
+        else:
+            assert distance.min() < .0013
+
+
+@pytest.mark.parametrize("config_file,mesh,origin", [
+    ("trunking_cable.yaml", "Trunking.STL", "0 0 0"),
+    ("trunking_cable_simplified_2mm.yaml", "Trunking_simplify.stl", "0.00014546 -0.00068397 0"),
+])
+def test_mtc_mesh_selection_reaches_all_scene_consumers(config_file, mesh, origin):
+    path = SOURCE/"dual_fr3_maniskill/config"/config_file
+    nodes, context = expand_launch("demo.launch.py", simulation_backend="maniskill",
+                                  maniskill_scene="trunking_cable", cable_config=str(path))
+    for node in nodes:
+        root = ET.fromstring(node_parameters(node, context)["robot_description"])
+        trunking = root.find("link[@name='trunking']")
+        for kind in ("visual", "collision"):
+            shape = trunking.find(kind)
+            assert shape.find("geometry/mesh").get("filename").endswith("/"+mesh)
+            assert shape.find("origin").get("xyz") == origin

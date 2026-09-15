@@ -13,6 +13,7 @@ from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 
 from dual_fr3_maniskill.launch_support import create_bridge_node
+from dual_fr3_maniskill.cable.backends import CABLE_SOLVERS
 from dual_fr3_maniskill.scenes import SCENES, resolve_cable_config, scene_spec
 from dual_fr3_moveit_config.maniskill_resources import build_maniskill_resources
 from dual_fr3_moveit_config.moveit_resources import load_yaml
@@ -35,7 +36,10 @@ def launch_setup(context):
         robot_description_semantic=resources.robot_description_semantic,
         python=LaunchConfiguration("maniskill_python"), viewer=LaunchConfiguration("maniskill_viewer"),
         simulation_config=LaunchConfiguration("maniskill_config").perform(context),
+        cable_solver=LaunchConfiguration("cable_solver").perform(context),
         cable_config=cable_config,
+        cable_trace_dir=LaunchConfiguration("cable_trace_dir").perform(context),
+        leader_orientation_direction=LaunchConfiguration("leader_orientation_direction").perform(context),
     )
     rsp = Node(package="robot_state_publisher", executable="robot_state_publisher",
                output="screen", parameters=[resources.robot_description, {"use_sim_time": True}])
@@ -80,6 +84,11 @@ def generate_launch_description():
     python = os.environ.get("MANISKILL_PYTHON", str(Path.cwd() / ".venv/bin/python"))
     return LaunchDescription([
         DeclareLaunchArgument("maniskill_scene", default_value="robot", choices=SCENES),
+        DeclareLaunchArgument("cable_solver", default_value="mpm", choices=CABLE_SOLVERS),
+        DeclareLaunchArgument("leader_orientation_direction", default_value="reverse",
+                              choices=("forward", "reverse")),
+        DeclareLaunchArgument("cable_trace_dir", default_value="",
+                              description="Optional Rope-Actor diagnostic output directory; empty disables recording."),
         DeclareLaunchArgument("cable_config", default_value="",
                               description="USB/cable material and initial-layout YAML; empty uses the scene default."),
         DeclareLaunchArgument("load_gripper", default_value="true"),
