@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""GPU smoke test: dimensions, gravity, attachment and measured robot motion."""
+"""MPM smoke test under world support, not a successful contact-grasp claim."""
 import argparse
 import json
 from pathlib import Path
@@ -43,7 +43,8 @@ def main():
             assert max(depths[base_shapes]) > .01, 'Right FR3 base mesh contact was not detected'
             sim.cable.check_contacts()
             initial = sim.cable.centerline.copy()
-            initial_plug = sim.link_pose(USB_LINK).copy()
+            initial_plug = np.asarray(sim.env.plug.pose.p).copy()
+            initial_tcp = sim.link_pose("left_fr3_hand_tcp").copy()
             initial_joint = sim.target[sim.indices["left_fr3_joint1"]]
             start = time.monotonic()
             max_penetration = 0.0
@@ -57,7 +58,10 @@ def main():
             report = sim.cable.diagnostics()
             report["sim_seconds"] = sim.time
             report["wall_seconds"] = time.monotonic() - start
-            report["plug_motion_m"] = float(np.linalg.norm(sim.link_pose(USB_LINK)[:3] - initial_plug[:3]))
+            report["plug_motion_m"] = float(np.linalg.norm(sim.env.plug.pose.p - initial_plug))
+            report["tcp_motion_m"] = float(np.linalg.norm(sim.link_pose("left_fr3_hand_tcp")[:3] - initial_tcp[:3]))
+            report["grasp_state"] = sim.env.grasp_monitor.snapshot()
+            report["validation_scope"] = "MPM backend with externally supported USB; grasp not verified"
             report["tip_drop_m"] = float(initial[-1, 2] - sim.cable.centerline[-1, 2])
             report["tracking_error_rad"] = float(np.max(np.abs(sim.positions - sim.target)))
             report["max_rigid_penetration_over_run_m"] = max_penetration
@@ -73,7 +77,9 @@ def main():
                 # The distant free end cannot feel the clamp this early.
                 expected_drop = .5 * 9.81 * sim.time ** 2
                 assert abs(report["tip_drop_m"] - expected_drop) < .2 * expected_drop, report
-            assert report["plug_motion_m"] > 1e-6, report
+            assert report["plug_motion_m"] < 1e-4, report
+            assert report["tcp_motion_m"] > 1e-6, report
+            assert report["grasp_state"]["external_support"], report
             if args.render_output:
                 from PIL import Image
                 Image.fromarray(sim.render_image(fixture_closeup=args.fixture_closeup)).save(args.render_output)
@@ -88,7 +94,9 @@ def main():
                 else:
                     raise AssertionError('Reset accepted a cable embedded in the table')
             np.testing.assert_array_equal(sim.cable.positions, before_reset)
-            sim.cable.reset()
+            sim.env.clear_objects()
+            assert sim.cable is None and sim.env.plug is None
+            sim.env.spawn_cable()
             assert sim.cable.diagnostics()["attachment_error_m"] < 1e-5
             assert abs(sim.cable.diagnostics()["current_centerline_length_m"] - config["cable"]["length"]) < 1e-4
         finally:

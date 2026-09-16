@@ -99,8 +99,12 @@ def test_all_entry_points_share_one_bridge_and_final_model(filename, scene, over
         if scene == "usb_cable":
             assert any("usb_cable.rviz" in resolve(context, arg) for arg in by_package["rviz2"].cmd)
         else:
+            assert Path(bridge["cable_config"]).name == "trunking_cable_simplified_2mm.yaml"
             assert USB_LINK not in expected_description
             assert "research_finger/finger1.STL" in expected_description
+            trunking = ET.fromstring(expected_description).find("link[@name='trunking']")
+            assert trunking.find("collision/geometry/mesh").get("filename").endswith("Trunking_simplify.stl")
+            assert trunking.find("visual/geometry/mesh").get("filename").endswith("Trunking.STL")
         move_group = parameters["moveit_ros_move_group"]
         assert move_group["trajectory_execution.allowed_execution_duration_scaling"] == 10.
         assert move_group["trajectory_execution.allowed_goal_duration_margin"] == 5.
@@ -137,18 +141,16 @@ def test_custom_cable_configuration_reaches_model_and_bridge(tmp_path):
     assert values["cable_config"] == str(path)
     assert values["control_freq"] == 25
     robot = ET.fromstring(values["robot_description"])
-    assert float(robot.find(f"link[@name='{USB_LINK}']/inertial/mass").get("value")) == .025
-    assert robot.find("joint[@name='usb_cable_demo_mount']/origin").get("xyz") != "0.0 0.0 0.0"
+    assert load_config(values["cable_config"])["usb"]["mass"] == .025
+    assert robot.find("joint[@name='usb_cable_demo_mount']") is None
     links = {link.get("name") for link in robot.findall("link")}
-    assert len(robot.findall(f"link[@name='{USB_LINK}']")) == 1
+    assert not robot.findall(f"link[@name='{USB_LINK}']")
     for joint in robot.findall("joint"):
         assert joint.find("parent").get("link") in links
         assert joint.find("child").get("link") in links
-    for mesh in robot.findall(f"link[@name='{USB_LINK}']//mesh"):
-        assert mesh.get("filename") == "package://dual_fr3_maniskill/meshes/USB1.stl"
     # Resolve the same final model through the real simulator asset adapter.
     assets = prepare_assets(values["robot_description"], values["robot_description_semantic"], tmp_path)
-    assert assets.initial_positions["left_fr3_joint7"] == pytest.approx(3 * 3.141592653589793 / 4)
+    assert assets.initial_positions["left_fr3_joint7"] == pytest.approx(3.141592653589793 / 4)
 
 
 def test_physics_only_launch_uses_the_same_scene_selection():
@@ -232,6 +234,17 @@ def test_leader_orientation_reaches_deferred_cable_bridge(filename, direction):
     bridge, = [n for n in nodes if resolve(context, n.node_package) == "dual_fr3_maniskill"]
     assert node_parameters(bridge, context)["leader_orientation_direction"] == direction
 
+
+@pytest.mark.parametrize("enabled", ["true", "false"])
+@pytest.mark.parametrize("filename,scene", [("usb_cable.launch.py", "usb_cable"),
+                                           ("maniskill.launch.py", "trunking_cable"),
+                                           ("demo.launch.py", "trunking_cable")])
+def test_load_cable_reaches_ros_as_boolean(filename, scene, enabled):
+    nodes, context = expand_launch(filename, simulation_backend="maniskill",
+                                  maniskill_scene=scene, load_cable=enabled)
+    bridge, = [n for n in nodes if resolve(context, n.node_package) == "dual_fr3_maniskill"]
+    assert node_parameters(bridge, context)["load_cable"] is (enabled == "true")
+
 @pytest.mark.parametrize("config_file", ["trunking_cable.yaml", "trunking_cable_simplified_2mm.yaml"])
 def test_research_finger_bore_fits_the_mtc_cable(tmp_path, config_file):
     import trimesh
@@ -256,16 +269,14 @@ def test_research_finger_bore_fits_the_mtc_cable(tmp_path, config_file):
         _, distance, _ = trimesh.proximity.closest_point_naive(mesh, samples)
         radius = config['cable']['diameter']/2
         assert distance.min() > radius + .0001
-        if config_file == "trunking_cable.yaml":
-            assert distance.min() > .0035
-        else:
-            assert distance.min() < .0013
+        assert distance.min() > .0035
 
 
 @pytest.mark.parametrize("config_file,inherit_visual,mesh,origin", [
     ("trunking_cable.yaml", False, "Trunking.STL", "0 0 0"),
     ("trunking_cable_simplified_2mm.yaml", False, "Trunking_simplify.stl", "0.00014546 -0.00068397 0"),
     ("trunking_cable_simplified_2mm.yaml", True, "Trunking_simplify.stl", "0.00014546 -0.00068397 0"),
+    ("trunking_cable_simplified_2mm_precise.yaml", False, "Trunking_simplify.stl", "0.00014546 -0.00068397 0"),
 ])
 def test_mtc_mesh_selection_reaches_all_scene_consumers(tmp_path, config_file, inherit_visual, mesh, origin):
     path = SOURCE/"dual_fr3_maniskill/config"/config_file

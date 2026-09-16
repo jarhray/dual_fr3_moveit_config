@@ -48,13 +48,14 @@ ros2 launch dual_fr3_moveit_config demo.launch.py \
 
 ```bash
 ros2 launch dual_fr3_moveit_config usb_cable.launch.py \
-  maniskill_python:="$PWD/.venv/bin/python"
+  cable_solver:=rope_actor maniskill_python:="$PWD/.venv/bin/python"
 ```
 
-USB 场景将插头固定在左 TCP，拒绝左夹爪动作，可通过左臂运动观察线缆响应。准备阶段夹持线缆并执行走线，应使用 [MTC 入口](../dual_fr3_trunking_mtc/README.md)。
+USB 场景创建世界临时定位的动态插头；夹爪允许接触闭合与重新张开，通过 `/maniskill/usb/release` 和 `/maniskill/usb/verify` 检查实际抓持。追加 `load_cable:=false` 可完全跳过线缆后端。准备阶段夹持线缆并执行走线，应使用 [MTC 入口](../dual_fr3_trunking_mtc/README.md)。
 
-当前线缆物理仅有 MPM，已整理为对照基线；`simulation_backend` 选择机器人环境，尚不能选择 MPM/细杆。
-后续细杆与求解器参数的接入说明见[线缆后端交接文档](../dual_fr3_maniskill/docs/cable_backends.md)。
+`simulation_backend` 选择机器人环境；`cable_solver:=mpm`（默认）或 `cable_solver:=rope_actor` 选择线缆模型。
+本次接触夹持验收使用 Rope-Actor 或 `load_cable:=false` 的 USB-only，MPM 后续完善；默认后端未更改。
+两种模型及参数见[线缆后端文档](../dual_fr3_maniskill/docs/cable_backends.md)。
 
 ### 真机
 
@@ -93,6 +94,7 @@ Python 示例位于 `scripts/fr3_controller.py` 和 `scripts/fr3_controller_lin.
 | `maniskill_viewer` | `true` | 是否打开 ManiSkill 窗口 |
 | `maniskill_python` | `MANISKILL_PYTHON` 或当前目录 `.venv/bin/python` | 物理桥接使用的解释器 |
 | `cable_config` / `maniskill_config` | 按场景选择 | 线缆配置 / 仿真桥接参数文件 |
+| `load_cable` | `true` | `false` 仅加载动态 USB，不初始化线缆后端 |
 
 参数可追加到启动命令，例如 `use_rviz:=false`。后端统一使用 `simulation_backend`，旧的 `use_gazebo`、`use_fake_hardware` 启动参数已移除。
 

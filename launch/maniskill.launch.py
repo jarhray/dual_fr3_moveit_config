@@ -37,6 +37,7 @@ def launch_setup(context):
         python=LaunchConfiguration("maniskill_python"), viewer=LaunchConfiguration("maniskill_viewer"),
         simulation_config=LaunchConfiguration("maniskill_config").perform(context),
         cable_solver=LaunchConfiguration("cable_solver").perform(context),
+        load_cable=LaunchConfiguration("load_cable"),
         cable_config=cable_config,
         cable_trace_dir=LaunchConfiguration("cable_trace_dir").perform(context),
         leader_orientation_direction=LaunchConfiguration("leader_orientation_direction").perform(context),
@@ -85,6 +86,8 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument("maniskill_scene", default_value="robot", choices=SCENES),
         DeclareLaunchArgument("cable_solver", default_value="mpm", choices=CABLE_SOLVERS),
+        DeclareLaunchArgument("load_cable", default_value="true", choices=("true", "false"),
+                              description="false: USB contact-grasp debugging without a cable backend."),
         DeclareLaunchArgument("leader_orientation_direction", default_value="reverse",
                               choices=("forward", "reverse")),
         DeclareLaunchArgument("cable_trace_dir", default_value="",

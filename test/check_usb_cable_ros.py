@@ -19,7 +19,7 @@ from scipy.spatial.transform import Rotation
 from sensor_msgs.msg import JointState
 from std_srvs.srv import Trigger
 from tf2_ros import Buffer, TransformListener
-from visualization_msgs.msg import MarkerArray
+from visualization_msgs.msg import Marker, MarkerArray
 from ament_index_python.packages import get_package_share_directory
 from dual_fr3_maniskill.cable.model import load_config
 
@@ -35,7 +35,14 @@ def main():
         ('joints', '/joint_states', JointState), ('cable', '/usb_cable_demo/markers', MarkerArray),
         ('diagnostics', '/usb_cable_demo/diagnostics', DiagnosticArray),
         ('tcp', '/maniskill/left_tcp_pose', PoseStamped)]:
-        subscriptions.append(node.create_subscription(cls, topic, lambda msg, key=key: messages.update({key: msg}), 10))
+        def receive(msg, key=key):
+            if key == 'cable':
+                lines = [m for m in msg.markers if m.type == Marker.LINE_STRIP and m.action == Marker.ADD]
+                if not lines:
+                    return
+                msg = MarkerArray(markers=lines)
+            messages[key] = msg
+        subscriptions.append(node.create_subscription(cls, topic, receive, 10))
     buffer = Buffer()
     listener = TransformListener(buffer, node)
 
@@ -63,7 +70,10 @@ def main():
         joint_state = messages['joints']
         initial = dict(zip(joint_state.name, joint_state.position))
         finger_positions = [initial[f'left_fr3_finger_joint{i}'] for i in (1, 2)]
-        assert max(abs(q - config['usb']['finger_position']) for q in finger_positions) < 1e-4
+        assert max(abs(q - config['usb'].get('open_finger_position', .02)) for q in finger_positions) < 1e-4
+        wait(lambda: buffer.can_transform('world', 'usb_cable_demo_plug', Time()))
+        before = buffer.lookup_transform('world', 'usb_cable_demo_plug', Time()).transform.translation
+        initial_usb = np.array([before.x, before.y, before.z])
         request = GetMotionPlan.Request()
         plan = request.motion_plan_request
         plan.group_name = 'left_fr3_arm'
@@ -77,7 +87,7 @@ def main():
         response = result(planning.call_async(request)).motion_plan_response
         assert response.error_code.val == 1, response.error_code
         assert len(response.trajectory.joint_trajectory.points) > 1
-        print('PASS: MoveIt collision-checked left-arm plan with fixed USB', flush=True)
+        print('PASS: MoveIt left-arm plan while USB is externally supported in world', flush=True)
         client = ActionClient(node, ExecuteTrajectory, '/execute_trajectory')
         assert client.wait_for_server(timeout_sec=30)
         goal = ExecuteTrajectory.Goal(trajectory=response.trajectory)
@@ -102,11 +112,8 @@ def main():
         root = marker.points[0]
         error = np.linalg.norm(expected - [root.x,root.y,root.z])
         assert error < 1e-4, error
-        mount_tcp = buffer.lookup_transform('world', 'left_fr3_hand_tcp',
-            Time.from_msg(marker.header.stamp)).transform.translation
-        grip = Rotation.from_quat([q.x,q.y,q.z,q.w]).apply(config['usb']['grip_center']) + [p.x,p.y,p.z]
-        grip_error = np.linalg.norm(grip - [mount_tcp.x, mount_tcp.y, mount_tcp.z])
-        assert grip_error < 1e-6, grip_error
+        world_drift = np.linalg.norm(np.array([p.x,p.y,p.z]) - initial_usb)
+        assert world_drift < 1e-4, world_drift
         tcp = messages['tcp']
         wait(lambda: buffer.can_transform('world', 'left_fr3_hand_tcp', Time.from_msg(tcp.header.stamp)))
         tf_tcp = buffer.lookup_transform('world', 'left_fr3_hand_tcp', Time.from_msg(tcp.header.stamp)).transform.translation
@@ -116,18 +123,30 @@ def main():
         assert gripper.wait_for_server(timeout_sec=10)
         opening = GripperCommand.Goal()
         opening.command.position, opening.command.max_effort = .04, 10.
-        assert not result(gripper.send_goal_async(opening)).accepted
+        opening_handle = result(gripper.send_goal_async(opening))
+        assert opening_handle.accepted
+        opened = result(opening_handle.get_result_async())
+        assert opened.status == 4 and opened.result.reached_goal
         reset = node.create_client(Trigger, '/usb_cable_demo/reset')
         assert reset.wait_for_service(timeout_sec=10)
         assert result(reset.call_async(Trigger.Request())).success
+        status = node.create_client(Trigger, '/maniskill/usb/status')
+        assert status.wait_for_service(timeout_sec=10)
+        cleared = result(status.call_async(Trigger.Request()))
+        assert json.loads(cleared.message)['state'] == 'not_created'
+        spawn = node.create_client(Trigger, '/maniskill/cable/spawn')
+        assert spawn.wait_for_service(timeout_sec=10)
+        assert result(spawn.call_async(Trigger.Request())).success
+        supported = json.loads(result(status.call_async(Trigger.Request())).message)
+        assert supported['external_support'] and supported['state'] == 'supported'
         report = {'usb_root_tf_error_m': float(error), 'tcp_tf_error_m': float(tcp_error),
-                  'usb_grip_tf_error_m': float(grip_error),
+                  'usb_world_support_drift_m': float(world_drift),
                   'left_gripper_opening_m': float(sum(finger_positions)),
                   'left_joint1_motion_rad': target[0].position - initial['left_fr3_joint1'],
                   'marker_diameter_m': marker.scale.x,
                   'diagnostics': {v.key: json.loads(v.value) for v in messages['diagnostics'].status[0].values}}
         print(json.dumps(report, indent=2), flush=True)
-        print('PASS: MPM cable/USB TF synchronization, fixed gripper and reset service', flush=True)
+        print('PASS: MPM/USB TF, fixed world support, accepted opening, reset/respawn; contact grasp not tested here', flush=True)
     finally:
         node.destroy_node()
         rclpy.shutdown()

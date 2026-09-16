@@ -11,9 +11,9 @@ ManiSkill 的 `trunking_cable` 场景读取线缆 YAML 的 `scene.trunking_mesh`
 | `original` | `meshes/Trunking.STL` | `0 0 0` |
 | `simplified` | `meshes/Trunking_simplify.stl` | `0.00014546 -0.00068397 0` |
 
-当前默认 `trunking_cable.yaml` 使用原始网格、3 mm 线径和校正后的初始穿线位置。
-已完成完整任务的简化网格 / 2 mm 配置保存在 `trunking_cable_simplified_2mm.yaml`。
-该配置当前使用简化碰撞、原始显示：
+当前默认 `trunking_cable_simplified_2mm.yaml` 使用新版简化碰撞、原始视觉网格和 2 mm 线径。`trunking_cable.yaml` 作为原始碰撞网格对照保留。
+旧固定夹持版本曾完成完整任务的简化网格 / 2 mm 配置保存在 `trunking_cable_simplified_2mm.yaml`。
+该配置当前的显示与碰撞选择：
 
 ```yaml
 scene:
@@ -21,7 +21,8 @@ scene:
   trunking_visual_mesh: original
 ```
 
-MoveIt / MTC 使用简化碰撞几何，ManiSkill / RViz 使用原始显示几何。
+MoveIt / MTC 使用简化碰撞几何，ManiSkill / RViz 当前显示原始 CAD。
+需要显示实际碰撞外形时设置 `scene.trunking_visual_mesh: simplified`。
 省略 `trunking_visual_mesh` 时保持原有的显示与碰撞一起切换行为。
 详细验证见[3 mm 试验](../../dual_fr3_maniskill/docs/debugging_summary.md#original-3mm)。
 此选择仅作用于启用线缆的 ManiSkill 场景；普通机器人及 Gazebo 的 Xacro 默认仍为简化网格。
@@ -29,26 +30,28 @@ MoveIt / MTC 使用简化碰撞几何，ManiSkill / RViz 使用原始显示几�
 
 ## 简化网格来源与坐标对齐
 
-2026-09-15 起，`dual_fr3.urdf.xacro` 和 `dual_fr3.gazebo.urdf.xacro` 的
-`trunking` 显示、碰撞几何统一使用 `meshes/Trunking_simplify.stl`。
-这是用户提供的 `temp/Trunking_simplify.stl` 的逐字节副本，单位为米；
-原始 `meshes/Trunking.STL` 保留，当前用于上述原始线槽试验。
-旧的一次性网格切换脚本已随调试目录清理。现在可直接在配置副本中显式设置
-`scene.trunking_mesh: original` 或 `simplified`，由正式入口选择对应网格与原点。
-历史实验条件与结论保留在[调试总结](../../dual_fr3_maniskill/docs/debugging_summary.md#resolution)。
+2026-09-16 将用户提供的 `temp/trunking-simplified_1.stl` 逐字节覆盖到
+`meshes/Trunking_simplify.stl`，旧简化文件不再保留在代码库中。保留资源文件名，
+因此两处 Xacro、ManiSkill 和 MoveIt 的现有引用继续有效。单位为米。
+原始 `meshes/Trunking.STL` 保留作为原始 CAD 对照。
 
-新网格有 10,938 个三角面，旧网格有 53,712 个，减少约 79.6%。
-它填平齿缝，保留线槽内部通道；静态碰撞仍加载完整三角网格，未使用会封闭槽腔的凸包。
+| 网格 | 三角面数 | 封闭连通分量 | 最高点 / mm |
+| --- | ---: | ---: | ---: |
+| 原始 CAD | 53,712 | 12 | 58.4 |
+| 上一版简化（已替换） | 10,938 | 13 | 88.8 |
+| 当前简化 | 304 | 1 | 65.0 |
 
-12 段线槽的外形尺寸与旧模型一致，但 CAD 导出原点存在共同偏移。
-因此两处 URDF 的 visual 和 collision 都设置局部原点
-`xyz="0.00014546 -0.00068397 0"`，将它们对齐原有场景布局。
-`plate_to_trunking` 和 MTC 的任务坐标保持原有定义。
+当前版比上一简化版减少约 97.2% 三角面。静态碰撞仍加载非凸三角网格，
+保留内部通道，不使用封闭槽腔的整体凸包。
 
-新文件另含一个独立零件，共有 13 个封闭网格分量。其最高点为 88.8 mm，
-原有槽壁最高点仍为 58.4 mm；用户确认保留新尺寸，未删除或压缩此零件。
-Xacro 默认显示与碰撞都包含它。简化版配置覆盖为原始显示模型后，这个额外零件仍存在于
-简化碰撞中，但不会出现在原始显示网格中；查看实际碰撞形状时可在 RViz 中启用碰撞几何显示。
+这次不仅减少三角面：外轮廓、部分槽壁和槽高也有改变，旧版独立零件已消失。
+新文件局部 AABB 约为 `[-0.549544, -0.963441, 0]` 到
+`[0.004034, -0.002741, 0.065]` m。这些差异不能通过单一平移消除。
+保留现有场景局部变换 `xyz="0.00014546 -0.00068397 0"`，
+不擅自移动 `plate_to_trunking` 或修改任务路径；该变换是沿用的布局约定，
+不表示新旧槽壁精确重合。旧版按 58.4 mm 槽沿生成的任务路径需要重新检查。
+当前配置显示原始 CAD；查看新模型实际槽壁时应切换为 simplified 显示，
+以检查显示与碰撞之间的差异。
 
 构建并重启场景后生效：
 

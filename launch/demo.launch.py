@@ -362,6 +362,7 @@ def generate_launch_description():
             DeclareLaunchArgument("maniskill_viewer", default_value="true"),
             DeclareLaunchArgument("maniskill_scene", default_value="robot", choices=SCENES),
             DeclareLaunchArgument("cable_solver", default_value="mpm", choices=CABLE_SOLVERS),
+            DeclareLaunchArgument("load_cable", default_value="true", choices=("true", "false")),
             DeclareLaunchArgument("cable_config", default_value=""),
             DeclareLaunchArgument("cable_trace_dir", default_value=""),
             DeclareLaunchArgument("maniskill_config", default_value=""),
