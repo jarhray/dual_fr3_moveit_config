@@ -296,3 +296,23 @@ def test_mtc_mesh_selection_reaches_all_scene_consumers(tmp_path, config_file, i
             shape = trunking.find(kind)
             assert shape.find("geometry/mesh").get("filename").endswith("/"+expected_mesh)
             assert shape.find("origin").get("xyz") == expected_origin
+
+
+def test_perception_enable_adds_independent_node_and_camera():
+    nodes, context = expand_launch('usb_cable.launch.py', perception_enabled='true', cable_solver='rope_actor')
+    perception = [n for n in nodes if resolve(context, n.node_package) == 'dual_fr3_cable_perception']
+    assert len(perception) == 1
+    bridges = [n for n in nodes if resolve(context, n.node_package) == 'dual_fr3_maniskill']
+    assert len(bridges) == 1
+    assert node_parameters(bridges[0], context)['perception_enabled'] is True
+
+
+@pytest.mark.parametrize('backend', ['fake', 'real', 'gazebo'])
+def test_unsupported_perception_backends_fail_explicitly(backend):
+    with pytest.raises(ValueError, match='maniskill only'):
+        expand_launch('demo.launch.py', simulation_backend=backend, perception_enabled='true')
+
+
+def test_perception_requires_a_cable_scene():
+    with pytest.raises(ValueError, match='requires maniskill_scene'):
+        expand_launch('maniskill.launch.py', perception_enabled='true')

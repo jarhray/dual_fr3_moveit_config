@@ -18,7 +18,7 @@ from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 
-from dual_fr3_maniskill.launch_support import create_bridge_node
+from dual_fr3_maniskill.launch_support import create_bridge_node, perception_arguments, perception_nodes, validate_perception, perception_camera_config
 from dual_fr3_maniskill.cable.backends import CABLE_SOLVERS
 from dual_fr3_maniskill.scenes import SCENES, resolve_cable_config, scene_spec
 from dual_fr3_moveit_config.maniskill_resources import build_maniskill_resources
@@ -28,6 +28,7 @@ from dual_fr3_moveit_config.moveit_resources import load_yaml
 def launch_setup(context):
     share = get_package_share_directory("dual_fr3_moveit_config")
     scene = LaunchConfiguration("maniskill_scene").perform(context)
+    enabled = validate_perception(context, "maniskill", scene)
     cable_config = (
         resolve_cable_config(
             LaunchConfiguration("cable_config").perform(context), scene=scene
@@ -46,6 +47,8 @@ def launch_setup(context):
         "dual_fr3_moveit_config", "config/moveit_controllers_gazebo.yaml"
     )
     bridge = create_bridge_node(
+        perception_enabled=enabled,
+        camera_config=perception_camera_config(context, scene) if enabled else "",
         scene=scene,
         robot_description=resources.robot_description,
         robot_description_semantic=resources.robot_description_semantic,
@@ -120,7 +123,7 @@ def launch_setup(context):
             on_exit=[EmitEvent(event=Shutdown(reason="ManiSkill simulation exited"))],
         )
     )
-    actions = [shutdown, bridge, rsp, move_group, rviz]
+    actions = [shutdown, bridge, rsp, move_group, rviz, *perception_nodes(context)]
     if scene == "usb_cable":
         actions.insert(
             0,
@@ -138,6 +141,7 @@ def generate_launch_description():
     python = os.environ.get("MANISKILL_PYTHON", str(Path.cwd() / ".venv/bin/python"))
     return LaunchDescription(
         [
+            *perception_arguments(),
             DeclareLaunchArgument(
                 "maniskill_scene", default_value="robot", choices=SCENES
             ),

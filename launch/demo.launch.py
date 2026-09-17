@@ -3,7 +3,7 @@ from pathlib import Path
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, GroupAction, IncludeLaunchDescription, Shutdown
+from launch.actions import OpaqueFunction, DeclareLaunchArgument, GroupAction, IncludeLaunchDescription, Shutdown
 from launch.conditions import IfCondition, UnlessCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import (
@@ -15,6 +15,7 @@ from launch.substitutions import (
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 
+from dual_fr3_maniskill.launch_support import perception_arguments, validate_perception
 from dual_fr3_maniskill.cable.backends import CABLE_SOLVERS
 from dual_fr3_maniskill.scenes import SCENES
 from dual_fr3_moveit_config.backends import DEFAULT_SIMULATION_BACKEND, SIMULATION_BACKENDS
@@ -351,6 +352,7 @@ def generate_launch_description():
 
     return LaunchDescription(
         [
+            *perception_arguments(),
             DeclareLaunchArgument(
                 "simulation_backend",
                 default_value=DEFAULT_SIMULATION_BACKEND,
@@ -430,6 +432,7 @@ def generate_launch_description():
                 default_value="",
                 description="Disabled MoveGroup capabilities.",
             ),
+            OpaqueFunction(function=lambda context: (validate_perception(context, backend.perform(context)), [])[1]),
             hardware,
             *simulators,
         ]
