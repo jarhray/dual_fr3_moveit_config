@@ -15,7 +15,7 @@ from launch.substitutions import (
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 
-from dual_fr3_maniskill.launch_support import perception_arguments, validate_perception
+from dual_fr3_maniskill.ros.launch import perception_arguments, validate_perception
 from dual_fr3_maniskill.cable.backends import CABLE_SOLVERS
 from dual_fr3_maniskill.scenes import SCENES
 from dual_fr3_moveit_config.backends import DEFAULT_SIMULATION_BACKEND, SIMULATION_BACKENDS

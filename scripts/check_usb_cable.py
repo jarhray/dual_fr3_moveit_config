@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import numpy as np
 
-from dual_fr3_maniskill.assets import prepare_assets
+from dual_fr3_maniskill.robot.assets import prepare_assets
 from dual_fr3_maniskill.cable.model import USB_LINK, load_config
 from dual_fr3_maniskill.scenes import resolve_cable_config
 from dual_fr3_maniskill.scenes.usb_cable import UsbCableSimulation

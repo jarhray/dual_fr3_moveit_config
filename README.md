@@ -109,3 +109,5 @@ ros2 launch dual_fr3_moveit_config demo.launch.py --show-args
 - [夹爪接口说明](docs/gripper_action_test.md)：真机与仿真的 action 差异及测试。
 - [ManiSkill 使用导航](docs/maniskill.md)：环境安装、场景和验证入口。
 - [研究手指网格说明](docs/research_finger_mesh.md)：网格配准、TCP 和模型验证。
+
+参数的作用、单位、消费文件及验证方法见 [参数索引](docs/parameters.md)；当前声明值和配置差异见 [默认值来源](docs/parameter_defaults.md)。

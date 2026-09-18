@@ -18,7 +18,7 @@ from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 
-from dual_fr3_maniskill.launch_support import create_bridge_node, perception_arguments, perception_nodes, validate_perception, perception_camera_config
+from dual_fr3_maniskill.ros.launch import create_bridge_node, perception_arguments, perception_nodes, validate_perception, perception_camera_config
 from dual_fr3_maniskill.cable.backends import CABLE_SOLVERS
 from dual_fr3_maniskill.scenes import SCENES, resolve_cable_config, scene_spec
 from dual_fr3_moveit_config.maniskill_resources import build_maniskill_resources
