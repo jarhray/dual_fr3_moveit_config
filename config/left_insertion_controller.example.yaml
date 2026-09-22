@@ -1,0 +1,33 @@
+# OFFLINE EXAMPLE ONLY. Replace limits with measured/approved values before activation.
+# Load this alongside the normal real backend configuration; spawn this controller INACTIVE.
+/**:
+  controller_manager:
+    ros__parameters:
+      left_insertion_controller:
+        type: dual_fr3_moveit_config/JointTargetController
+  left_insertion_controller:
+    ros__parameters:
+      enabled: false
+      calibration_verified: false
+      runtime_limits_verified: false
+      joints: [left_fr3_joint1, left_fr3_joint2, left_fr3_joint3, left_fr3_joint4, left_fr3_joint5, left_fr3_joint6, left_fr3_joint7]
+      robot_state_interface: left_fr3/robot_state
+      joint_lower: [-2.9007, -1.8361, -2.9007, -3.0770, -2.8763, 0.4398, -3.0508]
+      joint_upper: [2.9007, 1.8361, 2.9007, -0.1169, 2.8763, 4.6216, 3.0508]
+      k_gains: [600.0, 600.0, 600.0, 600.0, 250.0, 150.0, 50.0]
+      d_gains: [30.0, 30.0, 30.0, 30.0, 10.0, 10.0, 5.0]
+      max_velocity: [0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05]
+      max_acceleration: [0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2]
+      max_torque: [30.0, 30.0, 30.0, 30.0, 8.0, 8.0, 8.0]
+      max_torque_rate: [100.0, 100.0, 100.0, 100.0, 50.0, 50.0, 50.0]
+      max_tracking_error: [0.015, 0.015, 0.015, 0.015, 0.015, 0.015, 0.015]
+      command_timeout_s: 0.10
+      state_timeout_s: 0.01
+      max_period_s: 0.005
+      future_tolerance_s: 0.005
+      max_force_norm_n: 8.0
+      max_moment_norm_nm: 1.0
+      activation_velocity_rad_s: 0.01
+      stopped_velocity_rad_s: 0.003
+      settle_time_s: 0.1
+      state_publish_rate_hz: 50.0

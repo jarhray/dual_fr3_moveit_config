@@ -1,0 +1,5 @@
+<library path="dual_fr3_joint_target_controller">
+  <class name="dual_fr3_moveit_config/JointTargetController" type="dual_fr3_moveit_config::controllers::JointTargetController" base_class_type="controller_interface::ControllerInterface">
+    <description>Finite-lifetime bounded joint target effort controller for independently validated insertion trials.</description>
+  </class>
+</library>

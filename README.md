@@ -4,6 +4,11 @@
 
 本包负责机器人环境与运动接口。自动走线使用 [dual_fr3_trunking_mtc](../dual_fr3_trunking_mtc/README.md)，ManiSkill 物理与线缆实现见 [dual_fr3_maniskill](../dual_fr3_maniskill/README.md)。
 
+局部关节目标执行器也在本包内：`src/controllers/` 保存 ros2_control 插件，
+`msg/` 保存目标与状态消息，`config/` 保存配置。任务编排、插入策略调用与局部 IK
+由任务包的 `insertion_task/` 负责，执行器只负责跟踪、时效检查和停止保持。
+插件不会随常规环境启动自动接管机器人，入口见 [插入控制器说明](docs/insertion_controller.md)。
+
 ## 构建
 
 需要 ROS 2 Humble、MoveIt 2 和工作区的 Franka 依赖。Gazebo 后端还需要 `ros_gz_sim`、`ros_gz_bridge`、`gz_ros2_control` 及 `franka_gazebo_hardware`。在工作区根目录执行：
@@ -106,6 +111,7 @@ ros2 launch dual_fr3_moveit_config demo.launch.py --show-args
 
 - [后端、模型与排查](docs/backends.md)：坐标布局、控制器、障碍物和检查命令。
 - [Python 控制接口](docs/python_control.md)：双臂目标、夹爪和直线运动。
+- [插入控制器说明](docs/insertion_controller.md)：局部关节目标插件、反馈消息、配置与停止保持。
 - [夹爪接口说明](docs/gripper_action_test.md)：真机与仿真的 action 差异及测试。
 - [ManiSkill 使用导航](docs/maniskill.md)：环境安装、场景和验证入口。
 - [研究手指网格说明](docs/research_finger_mesh.md)：网格配准、TCP 和模型验证。
